@@ -201,13 +201,30 @@ create trigger on_auth_user_created
   for each row execute function public.handle_new_user();
 ```
 
+## Supabase API keys (sistem baru — bukan legacy)
+
+Supabase mengganti `anon`/`service_role` (JWT lama) dengan key pendek. Pakai yang baru:
+
+| Key | Nilai | Dipakai di | Peran Postgres |
+|-----|-------|-----------|----------------|
+| Publishable | `sb_publishable_...` | Browser + server (baca ber-JWT) | `anon` / `authenticated` |
+| Secret | `sb_secret_...` | **Hanya server** (Route Handler) | `service_role` (bypass RLS) |
+
+Aturan:
+- Dua-duanya **wajib ada** — secret saja tidak cukup. Client (login + Realtime) butuh publishable.
+- Secret key **tidak pernah** diberi prefix `NEXT_PUBLIC_`, tidak masuk git, tidak di browser.
+  Supabase menolak secret key yang datang dari browser (HTTP 401).
+- Key baru **bukan JWT** → dikirim lewat header `apikey`. Pakai `@supabase/ssr` + `supabase-js`
+  versi terbaru yang sudah mendukungnya.
+- Legacy `anon`/`service_role` masih jalan kalau kamu belum mau pindah, tapi deprecated akhir 2026.
+
 ## Env contract
 
 | Env | Sumber / isi |
 |-----|--------------|
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase → Settings → API |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase → Settings → API |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase → Settings → API (**server-only**) |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase → Settings › API Keys, key `sb_publishable_...` (browser aman) |
+| `SUPABASE_SECRET_KEY` | Supabase → Settings › API Keys, key `sb_secret_...` (**server-only**) |
 | `NEXT_PUBLIC_LIVEKIT_URL` | LiveKit Cloud → project |
 | `LIVEKIT_API_KEY` / `LIVEKIT_API_SECRET` | LiveKit Cloud (**server-only**) |
 | `MIDTRANS_SERVER_KEY` / `MIDTRANS_CLIENT_KEY` | Midtrans sandbox |
