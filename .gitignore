@@ -1,0 +1,20 @@
+# Hobyd hackathon — fresh build
+node_modules/
+.next/
+out/
+build/
+dist/
+
+# env & secrets — never commit
+.env
+.env.local
+.env*.local
+
+# tooling / OS
+*.tsbuildinfo
+.DS_Store
+Thumbs.db
+.vercel
+.idea/
+.vscode/
+*.log
