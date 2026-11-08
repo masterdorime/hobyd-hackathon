@@ -77,6 +77,13 @@
     "leader": "{name} memimpin",
     "activity": "Aktivitas bid",
     "realtime": "REALTIME",
+    "newBid": "{name} menawar {amount}",
+    "connection": {
+      "idle": "MENYIAPKAN",
+      "connecting": "MENGHUBUNGKAN",
+      "connected": "REALTIME",
+      "disconnected": "MENYAMBUNG ULANG"
+    },
     "historyEmpty": "Belum ada bid. Jadilah yang pertama.",
     "lastSeconds": "10 DETIK TERAKHIR",
     "timeRemaining": "WAKTU TERSISA",

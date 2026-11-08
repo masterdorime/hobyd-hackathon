@@ -42,6 +42,12 @@ export type BidWithName = Bid & {
   profile_name: string;
 };
 
+export interface PlaceBidResult {
+  ok: true;
+  bid: Bid;
+  extended: boolean;
+}
+
 export interface Order {
   id: string;
   item_id: string;

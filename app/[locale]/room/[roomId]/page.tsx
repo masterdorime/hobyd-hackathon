@@ -2,15 +2,13 @@ import { notFound } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 
-import { BidFeed } from "@/components/bid-feed";
-import { ItemPanel } from "@/components/item-panel";
-import { LiveVideo } from "@/components/live-video";
+import { LiveAuction } from "@/components/live-auction";
 import { SellerItemForm } from "@/components/seller-item-form";
+import { getAuctionSnapshot } from "@/lib/server/auction";
 import { isSellerEmail } from "@/lib/server/auth";
-import { listItems } from "@/lib/server/items";
 import { getRoom } from "@/lib/server/rooms";
 import { createServerSupabase } from "@/lib/supabase/server";
-import type { Item } from "@/lib/types";
+import type { BidWithName, Item, Room } from "@/lib/types";
 
 type RoomPageProps = { params: Promise<{ locale: string; roomId: string }> };
 
@@ -19,22 +17,20 @@ export default async function RoomPage({ params }: RoomPageProps) {
   setRequestLocale(locale);
 
   const supabase = await createServerSupabase();
-  const [room, items, auth] = await Promise.all([
+  const [room, snapshot, auth] = await Promise.all([
     getRoom(roomId),
-    listItems(roomId),
+    getAuctionSnapshot(roomId),
     supabase.auth.getUser(),
   ]);
   if (!room) {
     notFound();
   }
 
-  const item = items.find((candidate) => candidate.status !== "closed") ?? items[0] ?? null;
-
   return (
     <RoomContent
-      key={item ? `${item.id}:${item.current_price}:${item.ends_at}` : room.id}
       room={room}
-      item={item}
+      initialItem={snapshot.item}
+      initialBids={snapshot.bids}
       canSell={isSellerEmail(auth.data.user?.email)}
     />
   );
@@ -42,11 +38,13 @@ export default async function RoomPage({ params }: RoomPageProps) {
 
 function RoomContent({
   room,
-  item,
+  initialItem,
+  initialBids,
   canSell,
 }: {
-  room: NonNullable<Awaited<ReturnType<typeof getRoom>>>;
-  item: Item | null;
+  room: Room;
+  initialItem: Item | null;
+  initialBids: BidWithName[];
   canSell: boolean;
 }) {
   const roomText = useTranslations("room");
@@ -62,19 +60,7 @@ function RoomContent({
         </div>
         <span className="status-live"><span className="status-dot" />{room.status === "live" ? common("live") : room.status.toUpperCase()}</span>
       </section>
-      <div className="live-layout">
-        <div className="stream-column">
-          <LiveVideo sellerName={room.seller_name} itemTitle={item?.title ?? roomText("noActiveItem")} />
-          <BidFeed bids={[]} />
-        </div>
-        {item ? (
-          <ItemPanel item={item} bids={[]} previewEndsAt={item.ends_at} />
-        ) : (
-          <section className="item-panel raised empty-item">
-            <h2>{roomText("noActiveItem")}</h2>
-          </section>
-        )}
-      </div>
+      <LiveAuction room={room} initialItem={initialItem} initialBids={initialBids} />
       {canSell ? <SellerItemForm roomId={room.id} roomStatus={room.status} /> : null}
     </main>
   );

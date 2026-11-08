@@ -249,6 +249,11 @@ button:disabled, input:disabled { cursor: not-allowed; opacity: .58; }
 .feed-row { display: grid; grid-template-columns: 1fr auto auto; gap: .875rem; padding: .625rem 0; border-top: 1px solid #fff2be0b; color: var(--smoke); font-size: .625rem; }
 .feed-row strong { color: var(--warm-paper); font-weight: 600; font-variant-numeric: tabular-nums; }
 .feed-row-latest strong { color: var(--foil-yellow); }
+.feed-row-latest { animation: bid-in 180ms ease-out both; }
+@keyframes bid-in { from { opacity: .25; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+.connection-connected { color: var(--foil-yellow); }
+.connection-disconnected { color: var(--signal-coral); }
+.connection-connecting, .connection-idle { color: var(--smoke); }
 .feed-empty { margin: .5rem 0; color: var(--smoke); font-size: .6875rem; }
 
 .seller-panel { margin-top: 1.125rem; padding: 1.125rem; border-radius: .875rem; }

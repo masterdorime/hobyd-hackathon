@@ -77,6 +77,13 @@
     "leader": "{name} leads",
     "activity": "Bid activity",
     "realtime": "REALTIME",
+    "newBid": "{name} bids {amount}",
+    "connection": {
+      "idle": "PREPARING",
+      "connecting": "CONNECTING",
+      "connected": "REALTIME",
+      "disconnected": "RECONNECTING"
+    },
     "historyEmpty": "No bids yet. Be the first.",
     "lastSeconds": "LAST 10 SECONDS",
     "timeRemaining": "TIME REMAINING",

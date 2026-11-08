@@ -1,18 +1,40 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 
 import { secondsUntil } from "@/lib/time";
 
-export function Countdown({ endsAt, extensionsUsed }: { endsAt: string; extensionsUsed: number }) {
+export function Countdown({
+  endsAt,
+  extensionsUsed,
+  onElapsed,
+  closePending,
+}: {
+  endsAt: string;
+  extensionsUsed: number;
+  onElapsed(): Promise<unknown>;
+  closePending: boolean;
+}) {
   const t = useTranslations("bid");
   const [seconds, setSeconds] = useState<number | null>(null);
+  const elapsedRef = useRef(onElapsed);
+  const requestedRef = useRef(false);
 
   useEffect(() => {
-    const update = () => setSeconds(
-      secondsUntil(endsAt, performance.timeOrigin + performance.now()),
-    );
+    elapsedRef.current = onElapsed;
+  }, [onElapsed]);
+
+  useEffect(() => {
+    requestedRef.current = false;
+    const update = () => {
+      const remaining = secondsUntil(endsAt, performance.timeOrigin + performance.now());
+      setSeconds(remaining);
+      if (remaining === 0 && !requestedRef.current) {
+        requestedRef.current = true;
+        void elapsedRef.current();
+      }
+    };
     update();
     const interval = window.setInterval(update, 1000);
     return () => window.clearInterval(interval);
@@ -26,7 +48,7 @@ export function Countdown({ endsAt, extensionsUsed }: { endsAt: string; extensio
   const critical = seconds !== null && seconds < 10;
 
   return (
-    <div className="countdown well" aria-label={label}>
+    <div className="countdown well" aria-label={label} aria-busy={closePending}>
       <strong className="countdown-value">{label}</strong>
       <span className="countdown-copy">
         {critical ? t("lastSeconds") : t("timeRemaining")}<br />
