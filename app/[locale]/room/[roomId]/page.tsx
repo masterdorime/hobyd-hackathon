@@ -60,7 +60,7 @@ function RoomContent({
         </div>
         <span className="status-live"><span className="status-dot" />{room.status === "live" ? common("live") : room.status.toUpperCase()}</span>
       </section>
-      <LiveAuction room={room} initialItem={initialItem} initialBids={initialBids} />
+      <LiveAuction room={room} initialItem={initialItem} initialBids={initialBids} canSell={canSell} />
       {canSell ? <SellerItemForm roomId={room.id} roomStatus={room.status} /> : null}
     </main>
   );

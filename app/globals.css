@@ -182,6 +182,9 @@ button:disabled, input:disabled { cursor: not-allowed; opacity: .58; }
 .section-line { min-height: 1.25rem; margin-bottom: .625rem; }
 .section-label { margin: 0; }
 .video-housing { padding: .625rem; border-radius: .875rem; }
+.livekit-media { position: absolute; inset: 0; display: grid; background: #050503; transition: opacity 180ms ease; }
+.livekit-media video { width: 100%; height: 100%; object-fit: cover; }
+.livekit-media-empty { opacity: 0; pointer-events: none; }
 .live-video {
   position: relative;
   display: flex;

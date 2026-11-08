@@ -12,10 +12,12 @@ export function LiveAuction({
   room,
   initialItem,
   initialBids,
+  canSell,
 }: {
   room: Room;
   initialItem: Item | null;
   initialBids: BidWithName[];
+  canSell: boolean;
 }) {
   const auction = useAuction({
     roomId: room.id,
@@ -27,7 +29,7 @@ export function LiveAuction({
   return (
     <div className="live-layout">
       <div className="stream-column">
-        <LiveVideo sellerName={room.seller_name} itemTitle={auction.item?.title ?? t("noActiveItem")} />
+        <LiveVideo key={`${room.id}:${canSell}`} roomId={room.id} sellerName={room.seller_name} itemTitle={auction.item?.title ?? t("noActiveItem")} canSell={canSell} />
         <BidFeed bids={auction.bids} />
       </div>
       {auction.item ? (

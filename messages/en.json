@@ -45,6 +45,7 @@
     "streamTitle": "Live stream",
     "videoIsolated": "Bidding works independently of video",
     "cameraOn": "Camera on",
+    "videoConnecting": "Connecting video…",
     "cameraOff": "Video unavailable. You can still bid.",
     "currentAuction": "Current auction",
     "lot": "LOT / 001",
