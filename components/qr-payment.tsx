@@ -11,6 +11,7 @@ type QrisPayload = {
   qrUrl: string | null;
   status: OrderStatus;
   expiresAt: string;
+  paidAt?: string | null;
 };
 
 function displayTime(seconds: number | null): string {
@@ -31,6 +32,7 @@ export function QrPayment({
   const expiresFromOrder = order.qris_expires_at ?? new Date(Date.parse(order.created_at) + paymentWindowSec * 1000).toISOString();
   const [qrUrl, setQrUrl] = useState(order.qris_action_url ?? null);
   const [status, setStatus] = useState(order.status);
+  const [paidAt, setPaidAt] = useState(order.paid_at);
   const [expiresAt, setExpiresAt] = useState(expiresFromOrder);
   const [remaining, setRemaining] = useState<number | null>(null);
   const [loading, setLoading] = useState(order.status === "pending");
@@ -53,6 +55,7 @@ export function QrPayment({
       setQrUrl(payload.qrUrl);
       setStatus(payload.status);
       setExpiresAt(payload.expiresAt);
+      setPaidAt(payload.paidAt ?? null);
     } catch {
       setError(t("qrLoadFailed"));
     } finally {
@@ -103,8 +106,9 @@ export function QrPayment({
       if (!response.ok) {
         throw new Error("UPSTREAM_ERROR");
       }
-      const payload = await response.json() as { status: OrderStatus };
+      const payload = await response.json() as { status: OrderStatus; paid_at?: string | null };
       setStatus(payload.status);
+      setPaidAt(payload.paid_at ?? null);
     } catch {
       setError(t("actionFailed"));
     } finally {
@@ -127,15 +131,20 @@ export function QrPayment({
       <p className="muted">{status === "paid" ? t("paidHelp") : t("qrHelp")}</p>
       {loading ? <p className="form-note" role="status">{t("qrPending")}</p> : null}
       {error ? <p className="form-error" role="alert">{t("qrLoadFailed")}</p> : null}
-      {status === "pending" ? (
-        <>
-          {!qrUrl ? <button className="btn btn-secondary qr-confirm" type="button" onClick={loadQris} disabled={loading}>{t("retry")}</button> : null}
-          <button className="btn btn-primary qr-confirm" type="button" onClick={mockConfirm} disabled={confirming}>
-            {confirming ? t("confirmPending") : t("mockConfirm")}
-          </button>
-          <p className="form-note">{t("mockHelp")}</p>
-        </>
-      ) : null}
+      <div className="payment-confirmation well" aria-live="polite">
+        <span className="section-label">{t("confirmationTitle")}</span>
+        <strong>{t(status)}</strong>
+        {status === "paid" && paidAt ? <time dateTime={paidAt}>{t("confirmedAt")}: {paidAt} UTC</time> : null}
+        {status === "pending" ? (
+          <>
+            <button className="btn btn-primary qr-confirm" type="button" onClick={mockConfirm} disabled={confirming}>
+              {confirming ? t("confirmPending") : t("mockConfirm")}
+            </button>
+            <p className="form-note">{t("mockHelp")}</p>
+          </>
+        ) : null}
+      </div>
+      {status === "pending" && !qrUrl ? <button className="btn btn-secondary qr-confirm" type="button" onClick={loadQris} disabled={loading}>{t("retry")}</button> : null}
     </section>
   );
 }

@@ -12,7 +12,7 @@ import { useAuction } from "@/hooks/use-auction";
 import { formatIdr } from "@/lib/format";
 import type { BidWithName, Item, Room } from "@/lib/types";
 
-type RoomTab = "auction" | "chat" | "seller";
+type RoomTab = "auction" | "seller";
 
 export function LiveAuction({
   room,
@@ -42,11 +42,12 @@ export function LiveAuction({
 
   return (
     <>
-      <div className="room-tabs" role="tablist" aria-label={t("viewTabs")}>
-        <button className="room-tab" role="tab" aria-selected={tab === "auction"} onClick={() => setTab("auction")}>{t("tabsAuction")}</button>
-        <button className="room-tab" role="tab" aria-selected={tab === "chat"} onClick={() => setTab("chat")}>{t("tabsChat")}</button>
-        {canSell ? <button className="room-tab" role="tab" aria-selected={tab === "seller"} onClick={() => setTab("seller")}>{t("tabsSeller")}</button> : null}
-      </div>
+      {canSell ? (
+        <div className="room-tabs" role="tablist" aria-label={t("viewTabs")}>
+          <button className="room-tab" role="tab" aria-selected={tab === "auction"} onClick={() => setTab("auction")}>{t("tabsAuction")}</button>
+          <button className="room-tab" role="tab" aria-selected={tab === "seller"} onClick={() => setTab("seller")}>{t("tabsSeller")}</button>
+        </div>
+      ) : null}
 
       {tab === "auction" ? (
         <>
@@ -89,10 +90,9 @@ export function LiveAuction({
               </section>
             )}
           </div>
+          <ChatPanel roomId={room.id} authenticated={authenticated} loginHref={loginHref} live={room.status === "live"} />
         </>
       ) : null}
-
-      {tab === "chat" ? <ChatPanel roomId={room.id} authenticated={authenticated} loginHref={loginHref} live={room.status === "live"} /> : null}
 
       {tab === "seller" && canSell ? (
         <SellerItemForm roomId={room.id} relistItemId={relistItemId} items={auction.items} onStart={auction.startItem} />

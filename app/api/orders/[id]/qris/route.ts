@@ -27,6 +27,7 @@ export async function GET(
     }
 
     const now = Date.now();
+    let paidAt = order.paid_at;
     const outcome = await createOrResumeQris(
       order,
       item.current_price,
@@ -34,7 +35,8 @@ export async function GET(
       now,
     );
     if (outcome.status === "paid" && order.status === "pending") {
-      await markOrderPaid(id, now);
+      const paidOrder = await markOrderPaid(id, now);
+      paidAt = paidOrder.paid_at;
     } else if (outcome.status === "expired" && order.status === "pending") {
       await expireOrderIfDue(id, now);
     } else if (outcome.status === "pending") {
@@ -58,6 +60,7 @@ export async function GET(
       qrUrl: outcome.qrUrl,
       status: outcome.status,
       expiresAt: new Date(paymentDeadline(order)).toISOString(),
+      paidAt,
     });
   } catch (error) {
     const authResponse = authErrorResponse(error);

@@ -182,7 +182,9 @@
     "retry": "Try again",
     "mockHelp": "Use only as a sandbox fallback when the webhook cannot receive notifications locally.",
     "paidHelp": "The server verifies the confirmation status and payment time.",
-    "actionFailed": "Payment is not confirmed yet. Check the status and try again."
+    "actionFailed": "Payment is not confirmed yet. Check the status and try again.",
+    "confirmationTitle": "Payment confirmation",
+    "confirmedAt": "Confirmed at"
   },
   "chat": {
     "title": "Room chat",

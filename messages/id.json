@@ -182,7 +182,9 @@
     "retry": "Coba lagi",
     "mockHelp": "Gunakan hanya sebagai fallback sandbox ketika webhook lokal tidak dapat menerima notifikasi.",
     "paidHelp": "Status konfirmasi dan waktu pembayaran diverifikasi oleh server.",
-    "actionFailed": "Pembayaran belum terkonfirmasi. Periksa status dan coba lagi."
+    "actionFailed": "Pembayaran belum terkonfirmasi. Periksa status dan coba lagi.",
+    "confirmationTitle": "Konfirmasi pembayaran",
+    "confirmedAt": "Dikonfirmasi pada"
   },
   "chat": {
     "title": "Chat room",

@@ -44,9 +44,13 @@ name, email, and password. Password visibility controls are allowed.
 
 ## Mobile UI
 
-- Room uses tabs `Auction | Chat | Seller`; only one dense panel is visible at a time.
+- Room uses tabs `Auction | Seller` when applicable; chat lives inside the Auction
+  tab below video/feed on mobile and alongside auction content on desktop.
+- Only one dense panel is visible at a time for seller management.
 - Active lots use horizontal snap chips; bid panel stays before video.
-- Chat composer stays inside the tab and respects mobile keyboard behavior.
+- Payment confirmation is a persistent status block: pending exposes the sandbox
+  action, paid shows confirmation time, expired/cancelled show terminal status.
+- Chat composer stays inside the panel and respects mobile keyboard behavior.
 - 320/360/390px, landscape, focus, reduced-motion, and touch targets are tested.
 
 ## Out of scope
