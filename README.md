@@ -30,7 +30,7 @@ Repositori: `https://github.com/masterdorime/hobyd-hackathon`
 ## Stack
 
 Next.js (App Router) + TypeScript · Supabase (Postgres/Auth/Realtime/Storage) ·
-LiveKit Cloud · Midtrans sandbox · Vercel.
+LiveKit Cloud · Midtrans sandbox · Vercel
 
 ## Menjalankan
 
