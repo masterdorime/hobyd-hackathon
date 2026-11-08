@@ -8,10 +8,10 @@ import type { BidWithName, Item } from "@/lib/types";
 type ItemPanelProps = {
   item: Item;
   bids: BidWithName[];
-  previewSeconds: number;
+  previewEndsAt: string;
 };
 
-export function ItemPanel({ item, bids, previewSeconds }: ItemPanelProps) {
+export function ItemPanel({ item, bids, previewEndsAt }: ItemPanelProps) {
   const t = useTranslations("bid");
   const common = useTranslations("common");
   const room = useTranslations("room");
@@ -36,7 +36,7 @@ export function ItemPanel({ item, bids, previewSeconds }: ItemPanelProps) {
           </div>
         </div>
         <div className="auction-controls">
-          <Countdown seconds={previewSeconds} extensionsUsed={item.extensions_used} />
+          <Countdown endsAt={previewEndsAt} extensionsUsed={item.extensions_used} />
           <BidForm currentPrice={item.current_price} />
         </div>
       </article>

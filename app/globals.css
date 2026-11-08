@@ -38,6 +38,7 @@ button:disabled, input:disabled { cursor: not-allowed; opacity: .58; }
     radial-gradient(circle at 10% 0, #3b35202b, transparent 35%),
     linear-gradient(180deg, #1d1c16, #11110d 42%, var(--auction-black));
 }
+.route-loading { display: grid; min-height: 100vh; place-items: center; color: var(--foil-yellow); font-family: var(--utility); font-size: .625rem; letter-spacing: .08em; }
 
 .raised {
   border: 1px solid transparent;
@@ -257,6 +258,12 @@ button:disabled, input:disabled { cursor: not-allowed; opacity: .58; }
 .seller-form label { display: grid; gap: .375rem; color: var(--smoke); font-size: .625rem; }
 .seller-form input { width: 100%; min-width: 0; min-height: 2.75rem; padding: .625rem .75rem; border: 1px solid var(--line); border-radius: .5rem; background: #10100b; color: var(--warm-paper); }
 .seller-form small { color: var(--smoke); }
+.form-error { margin: .75rem 0 0; color: var(--signal-coral); font-size: .75rem; }
+.form-success { margin: .75rem 0 0; color: var(--foil-yellow); font-size: .75rem; }
+.seller-created { display: grid; gap: .375rem; margin-top: 1rem; padding: .875rem; border-radius: .5rem; color: var(--smoke); font-family: var(--utility); font-size: .625rem; overflow-wrap: anywhere; }
+.seller-created strong { color: var(--warm-paper); font-family: var(--body); font-size: .875rem; }
+.empty-item, .empty-state { padding: 1.5rem; color: var(--smoke); }
+.empty-item h2, .empty-state { margin-bottom: 0; font-size: .875rem; }
 
 .win-shell { display: grid; min-height: calc(100vh - 11rem); place-items: center; }
 .win-panel { width: min(100%, 36rem); padding: clamp(1.5rem, 5vw, 3rem); border-radius: 1rem; text-align: center; }

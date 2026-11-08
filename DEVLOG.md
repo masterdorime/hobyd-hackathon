@@ -13,3 +13,6 @@ Format: `YYYY-MM-DD HH:MM | tahap | kejadian | keputusan/aksi`
 - 2026-11-08 | Tahap 1 | Next.js 16.4 memakai Tailwind Turbopack tanpa `postcss.config.mjs`, runtime Node 24 | Selaraskan `@types/node@24`, jalankan `next typegen && tsc --noEmit`
 - 2026-11-08 | Tahap 2 | Routing next-intl dan navigasi instant Next 16 | Pakai `proxy.ts`, `setRequestLocale`, dan blocking route untuk param halaman
 - 2026-11-08 | Tahap 3 | Kredensial lama dipetakan ke publishable/secret key; uji memakai empat akun demo baru | RLS/RPC tetap ditolak untuk client; tidak ada akun existing diubah
+- 2026-11-08 | Tahap 1 | User memilih project Supabase greenfield `hobyd-hackathon`, bukan pilot | Schema+seed diterapkan; client select-only dan server write lewat service_role
+- 2026-11-08 | Tahap 4 | Waktu mulai item tidak bisa dipercaya dari browser | RPC `create_live_item` menghitung `ends_at=now()+duration` di Postgres
+- 2026-11-08 | Tahap 4 | `cacheComponents` Supabase SSR memicu background `Date.now` saat prerender | Gunakan App Router standar; matikan `cacheComponents`+`partialPrefetching`, jadikan route live/auth dinamis

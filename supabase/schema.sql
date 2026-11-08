@@ -164,3 +164,43 @@ drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute function public.handle_new_user();
+
+-- Additive item creation: ends_at is always derived by Postgres, never trusted from clients.
+create or replace function public.create_live_item(
+  p_room_id uuid,
+  p_title text,
+  p_img_url text,
+  p_start_price int,
+  p_duration_secs int
+) returns items
+language plpgsql security definer set search_path = public as $$
+declare
+  v_room rooms%rowtype;
+  v_item items%rowtype;
+begin
+  if p_room_id is null
+     or p_title is null or char_length(btrim(p_title)) not between 1 and 120
+     or p_img_url is null or btrim(p_img_url) = ''
+     or p_start_price is null or p_start_price <= 0
+     or p_duration_secs is null or p_duration_secs <= 0 then
+    raise exception 'invalid_item';
+  end if;
+
+  select * into v_room from public.rooms where id = p_room_id for update;
+  if not found or v_room.status <> 'live' then
+    raise exception 'room_not_live';
+  end if;
+
+  insert into public.items (
+    room_id, title, img_url, start_price, current_price,
+    ends_at, status
+  ) values (
+    p_room_id, btrim(p_title), p_img_url, p_start_price, p_start_price,
+    now() + make_interval(secs => p_duration_secs), 'live'
+  ) returning * into v_item;
+
+  return v_item;
+end; $$;
+
+revoke all on function public.create_live_item(uuid,text,text,int,int) from public, anon, authenticated;
+grant execute on function public.create_live_item(uuid,text,text,int,int) to service_role;

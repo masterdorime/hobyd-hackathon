@@ -49,7 +49,8 @@
     "currentAuction": "Lelang saat ini",
     "lot": "LOT / 001",
     "active": "AKTIF",
-    "closed": "LELANG SELESAI"
+    "closed": "LELANG SELESAI",
+    "noActiveItem": "Belum ada item aktif. Seller dapat membuat item setelah room live."
   },
   "item": {
     "title": "Charizard Base Set (Near Mint)",
@@ -63,6 +64,11 @@
     "createAction": "Buat item",
     "createPending": "Membuat item…",
     "goLive": "Go Live",
+    "goLivePending": "Menyiapkan…",
+    "goLiveSuccess": "Room sekarang live. Item siap dibuat.",
+    "liveRequired": "Aktifkan room dengan Go Live sebelum membuat item.",
+    "created": "Item berhasil dibuat",
+    "deadline": "Batas akhir server",
     "formPreview": "Form hanya pratinjau dan belum mengirim data."
   },
   "bid": {

@@ -5,8 +5,6 @@ import { Link } from "@/i18n/navigation";
 import { formatIdr } from "@/lib/format";
 import { DEMO_ORDER_ID, demoItem } from "@/lib/demo-data";
 
-export const instant = false;
-
 type WinPageProps = { params: Promise<{ locale: string; itemId: string }> };
 
 export default async function WinPage({ params }: WinPageProps) {

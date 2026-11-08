@@ -5,8 +5,6 @@ import { OrderSummary } from "@/components/order-summary";
 import { QrPayment } from "@/components/qr-payment";
 import { demoItem, demoOrder } from "@/lib/demo-data";
 
-export const instant = false;
-
 type PayPageProps = { params: Promise<{ locale: string; orderId: string }> };
 
 export default async function PayPage({ params }: PayPageProps) {

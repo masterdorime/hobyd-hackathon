@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
-import type { ReactNode } from "react";
+import { connection } from "next/server";
+import { Suspense, type ReactNode } from "react";
 
 import { SiteHeader } from "@/components/site-header";
 import { routing } from "@/i18n/routing";
@@ -11,8 +12,6 @@ type LocaleLayoutProps = {
   children: ReactNode;
   params: Promise<{ locale: string }>;
 };
-
-export const instant = false;
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -28,6 +27,7 @@ export async function generateMetadata({ params }: Omit<LocaleLayoutProps, "chil
 }
 
 export default async function LocaleLayout({ children, params }: LocaleLayoutProps) {
+  await connection();
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) {
     notFound();
@@ -39,8 +39,10 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
   return (
     <NextIntlClientProvider messages={messages}>
       <div className="app-world" lang={locale}>
-        <SiteHeader />
-        {children}
+        <Suspense fallback={<div className="route-loading" role="status">LOADING HOBYD…</div>}>
+          <SiteHeader />
+          {children}
+        </Suspense>
       </div>
     </NextIntlClientProvider>
   );

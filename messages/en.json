@@ -49,7 +49,8 @@
     "currentAuction": "Current auction",
     "lot": "LOT / 001",
     "active": "ACTIVE",
-    "closed": "AUCTION CLOSED"
+    "closed": "AUCTION CLOSED",
+    "noActiveItem": "No active item yet. The seller can create one after the room is live."
   },
   "item": {
     "title": "Charizard Base Set (Near Mint)",
@@ -63,6 +64,11 @@
     "createAction": "Create item",
     "createPending": "Creating item…",
     "goLive": "Go Live",
+    "goLivePending": "Starting…",
+    "goLiveSuccess": "The room is live. You can create an item now.",
+    "liveRequired": "Use Go Live before creating an item.",
+    "created": "Item created successfully",
+    "deadline": "Server deadline",
     "formPreview": "This form is a visual preview and does not submit data."
   },
   "bid": {

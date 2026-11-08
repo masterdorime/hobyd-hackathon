@@ -10,8 +10,6 @@ import id from "@/messages/id.json";
 export const metadata: Metadata = {
   title: "Masuk — HOBYD",
 };
-export const instant = false;
-
 type LoginPageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
