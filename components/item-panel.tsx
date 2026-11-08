@@ -1,4 +1,5 @@
 import { useTranslations } from "next-intl";
+import NextLink from "next/link";
 
 import { BidForm } from "@/components/bid-form";
 import { Countdown } from "@/components/countdown";
@@ -19,6 +20,7 @@ type ItemPanelProps = {
   closePending: boolean;
   connection: AuctionConnectionState;
   feedback: AuctionFeedback;
+  winnerHref?: string | null;
 };
 
 export function ItemPanel({
@@ -31,6 +33,7 @@ export function ItemPanel({
   closePending,
   connection,
   feedback,
+  winnerHref,
 }: ItemPanelProps) {
   const t = useTranslations("bid");
   const room = useTranslations("room");
@@ -60,6 +63,9 @@ export function ItemPanel({
           <BidForm key={`${item.id}:${item.current_price}`} currentPrice={item.current_price} onBid={onBid} pending={pending} disabled={!active || closePending} />
           <FormatAuctionFeedback feedback={feedback} />
           <CountUpAnnouncement bids={bids} />
+          {winnerHref ? (
+            <NextLink className="btn btn-primary winner-action" href={winnerHref}>{t("viewWin")}</NextLink>
+          ) : null}
         </div>
       </article>
     </div>

@@ -343,6 +343,7 @@ button:disabled, input:disabled { cursor: not-allowed; opacity: .58; }
 .payment-confirmation strong { color: var(--foil-yellow); font-family: var(--display); font-size: 1.375rem; }
 .payment-confirmation time { color: var(--smoke); font-family: var(--utility); font-size: .625rem; overflow-wrap: anywhere; }
 .payment-confirmation .qr-confirm { margin-top: .25rem; }
+.winner-action { width: 100%; margin-top: .75rem; }
 .room-chat { margin-top: 1rem; }
 .qr-panel h2 { margin: 1rem 0 .5rem; font-family: var(--display); font-size: 1.75rem; }
 .qr-countdown { padding: .75rem .875rem; border-radius: .5rem; color: var(--smoke); font-size: .625rem; }

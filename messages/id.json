@@ -153,7 +153,8 @@
     "closed": "Lelang sudah ditutup.",
     "rateLimited": "Tunggu satu detik sebelum bid berikutnya.",
     "loginRequired": "Masuk untuk mengajukan bid.",
-    "extended": "Timer diperpanjang +10 detik."
+    "extended": "Timer diperpanjang +10 detik.",
+    "viewWin": "Lihat hasil & bayar"
   },
   "win": {
     "eyebrow": "AUCTION COMPLETE",

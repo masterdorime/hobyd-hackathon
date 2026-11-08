@@ -83,6 +83,7 @@ export function LiveAuction({
                 closePending={auction.closePending}
                 connection={auction.connection}
                 feedback={auction.feedback}
+                winnerHref={auctionItem.status === "closed" && auctionItem.winner === auction.currentUserId ? `/${locale}/win/${auctionItem.id}` : null}
               />
             ) : (
               <section className="item-panel raised empty-item">

@@ -19,6 +19,7 @@ import {
   type AuctionSnapshot,
 } from "@/lib/client/auction-realtime";
 import type { BidWithName, Item } from "@/lib/types";
+import { resolveAuthoritativeWinner } from "@/lib/auction-winner";
 
 export type AuctionFeedback = {
   kind: "success" | "error" | "info";
@@ -43,10 +44,20 @@ export function useAuction({
   const [pending, setPending] = useState(false);
   const [closePending, setClosePending] = useState(false);
   const [feedback, setFeedback] = useState<AuctionFeedback>(null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const controllerRef = useRef<AuctionRealtimeController | null>(null);
   const closingRef = useRef(new Set<string>());
+  const redirectedRef = useRef(new Set<string>());
   const router = useRouter();
   const locale = useLocale();
+
+  useEffect(() => {
+    let active = true;
+    void getCurrentUserId()
+      .then((userId) => { if (active) setCurrentUserId(userId); })
+      .catch(() => undefined);
+    return () => { active = false; };
+  }, []);
 
   const activeItems = snapshot.items.filter((item) => ACTIVE.has(item.status));
   const selectedItem = snapshot.items.find((item) => item.id === selectedItemId)
@@ -92,17 +103,29 @@ export function useAuction({
     try {
       const result = await closeItemRequest(itemId);
       const latest = await refetchAndSync();
-      if (result.winner) {
-        const currentUserId = await getCurrentUserId();
-        if (currentUserId === result.winner && selectedItemId === itemId) {
-          router.push(`/${locale}/win/${itemId}`);
-        }
+      const winner = resolveAuthoritativeWinner(itemId, result.winner, latest?.items);
+      if (winner && currentUserId === winner && !redirectedRef.current.has(itemId)) {
+        redirectedRef.current.add(itemId);
+        router.push(`/${locale}/win/${itemId}`);
       }
       return { result, latest };
     } finally {
       closingRef.current.delete(itemId);
     }
-  }, [locale, refetchAndSync, router, selectedItemId]);
+  }, [currentUserId, locale, refetchAndSync, router]);
+
+  useEffect(() => {
+    if (!currentUserId) return;
+    const wonItem = snapshot.items.find((item) =>
+      item.status === "closed" &&
+      item.winner === currentUserId &&
+      !redirectedRef.current.has(item.id),
+    );
+    if (wonItem) {
+      redirectedRef.current.add(wonItem.id);
+      router.push(`/${locale}/win/${wonItem.id}`);
+    }
+  }, [currentUserId, locale, router, snapshot.items]);
 
   useEffect(() => {
     const timers = activeItems.flatMap((item) => {
@@ -170,6 +193,7 @@ export function useAuction({
     pending,
     closePending,
     feedback,
+    currentUserId,
     placeBid,
     startItem,
     closeItem,
