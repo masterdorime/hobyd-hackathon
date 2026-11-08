@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import NextLink from "next/link";
 import { useTranslations } from "next-intl";
 import { Room, RoomEvent, Track, type LocalTrack, type RemoteTrack } from "livekit-client";
 
@@ -13,19 +14,26 @@ export function LiveVideo({
   sellerName,
   itemTitle,
   canSell,
+  authenticated,
+  loginHref,
 }: {
   roomId: string;
   sellerName: string;
   itemTitle: string;
   canSell: boolean;
+  authenticated: boolean;
+  loginHref: string;
 }) {
   const t = useTranslations("room");
   const mediaRef = useRef<HTMLDivElement>(null);
   const tracksRef = useRef(new Set<RemoteTrack | LocalTrack>());
-  const [status, setStatus] = useState<VideoStatus>("connecting");
+  const [status, setStatus] = useState<VideoStatus>(authenticated ? "connecting" : "unavailable");
   const [hasVideo, setHasVideo] = useState(false);
 
   useEffect(() => {
+    if (!authenticated) {
+      return;
+    }
     let cancelled = false;
     const room = new Room();
     const tracks = tracksRef.current;
@@ -115,14 +123,14 @@ export function LiveVideo({
       container?.replaceChildren();
       void room.disconnect(true).catch(() => undefined);
     };
-  }, [roomId, canSell]);
+  }, [roomId, canSell, authenticated]);
 
   return (
     <section aria-labelledby="live-video-heading">
       <div className="section-line">
         <h2 className="section-label" id="live-video-heading">{t("sellerCamera")}</h2>
         <span className={status === "ready" ? "status-live" : "connection-disconnected"} aria-live="polite">
-          {status === "ready" ? <><span className="status-dot" />{t("cameraOn")}</> : t(status === "connecting" ? "videoConnecting" : "cameraOff")}
+          {status === "ready" ? <><span className="status-dot" />{t("cameraOn")}</> : t(!authenticated ? "videoLoginRequired" : status === "connecting" ? "videoConnecting" : "cameraOff")}
         </span>
       </div>
       <div className="video-housing raised">
@@ -130,11 +138,15 @@ export function LiveVideo({
           <div className={`livekit-media${hasVideo ? "" : " livekit-media-empty"}`} ref={mediaRef} aria-hidden={!hasVideo} />
           {!hasVideo ? (
             <>
-              <div className="video-status">{status === "connecting" ? "●" : "×"} {t(status === "connecting" ? "videoConnecting" : "cameraOff")}</div>
-              <div className="slab-object" aria-hidden="true">
-                <div className="slab-label"><strong>HOBYD</strong><span>LIVE LOT</span></div>
-                <div className="card-art">CHARIZARD<small>BASE SET</small></div>
-              </div>
+              <div className="video-status">{status === "connecting" ? "●" : "×"} {t(!authenticated ? "videoLoginRequired" : status === "connecting" ? "videoConnecting" : "cameraOff")}</div>
+              {!authenticated ? (
+                <NextLink className="btn btn-primary btn-small video-login" href={loginHref}>{t("loginToWatch")}</NextLink>
+              ) : (
+                <div className="slab-object" aria-hidden="true">
+                  <div className="slab-label"><strong>HOBYD</strong><span>LIVE LOT</span></div>
+                  <div className="card-art">CHARIZARD<small>BASE SET</small></div>
+                </div>
+              )}
             </>
           ) : null}
           <div className="video-foot">

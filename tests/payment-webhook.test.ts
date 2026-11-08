@@ -13,6 +13,7 @@ const mocks = vi.hoisted(() => ({
   requireUser: vi.fn(),
   markOrderPaid: vi.fn(),
   expireOrderIfDue: vi.fn(),
+  getRoom: vi.fn(),
 }));
 vi.mock("../lib/server/orders", () => ({
   getOrderForPayment: mocks.getOrderForPayment,
@@ -26,6 +27,7 @@ vi.mock("../lib/server/order-transitions", () => ({
   markOrderPaid: mocks.markOrderPaid,
   expireOrderIfDue: mocks.expireOrderIfDue,
 }));
+vi.mock("../lib/server/rooms", () => ({ getRoom: mocks.getRoom }));
 
 const KEY = "Mid-server-test";
 const NOW = Date.parse("2026-11-08T00:05:00.000Z");
@@ -86,6 +88,7 @@ beforeEach(() => {
   mocks.requireUser.mockResolvedValue({ id: order.winner });
   mocks.markOrderPaid.mockResolvedValue({ ...order, status: "paid" });
   mocks.expireOrderIfDue.mockResolvedValue({ changed: false, status: "pending" });
+  mocks.getRoom.mockResolvedValue({ id: item.room_id, owner_id: order.winner });
 });
 
 describe("Midtrans webhook", () => {

@@ -5,7 +5,6 @@
   },
   "common": {
     "brandDescription": "Live auctions for collectors",
-    "preview": "UI PREVIEW",
     "live": "LIVE",
     "lobby": "Lobby",
     "login": "Log in",
@@ -13,8 +12,7 @@
     "language": "Language",
     "seller": "Seller",
     "bidder": "Bidder",
-    "backToLobby": "Back to lobby",
-    "demoSeller": "Demo Seller"
+    "backToLobby": "Back to lobby"
   },
   "auth": {
     "title": "Log in to start bidding.",
@@ -30,13 +28,38 @@
     "back": "Back to lobby",
     "signedInAs": "Signed in as {name}"
   },
+  "categories": {
+    "pokemon": "Pokémon TCG",
+    "onePiece": "One Piece TCG",
+    "yuGiOh": "Yu-Gi-Oh! TCG",
+    "mtg": "Magic: The Gathering",
+    "sports": "Sports Cards",
+    "other": "Other"
+  },
   "lobby": {
     "eyebrow": "CHOOSE A LIVE ROOM",
     "title": "Enter a live auction.",
     "description": "See what collectors are bidding on, enter a room, and place your best bid.",
     "enterRoom": "Enter room",
-    "empty": "No active rooms yet.",
-    "seedNotice": "This page uses visual fixtures only, for interface approval."
+    "empty": "No live rooms yet.",
+    "videoAndBids": "Video + realtime bidding",
+    "liveRooms": "LIVE NOW",
+    "creatorLabel": "SELLER SPACE",
+    "startTitle": "Start your live.",
+    "startDescription": "Add a room name, category, and an optional thumbnail.",
+    "roomName": "Room name",
+    "roomNamePlaceholder": "Example: Pokémon Night Live",
+    "roomNameRequired": "Room name is required.",
+    "category": "Category",
+    "thumbnail": "Thumbnail (optional)",
+    "thumbnailHelp": "JPEG, PNG, or WebP · maximum 5MB",
+    "thumbnailKeep": "Leave empty to keep the current thumbnail.",
+    "startAction": "Start Live →",
+    "starting": "Preparing your live…",
+    "loginToStart": "Log in to start your live and watch other collectors.",
+    "loginAction": "Log in",
+    "alreadyLive": "Your room is live.",
+    "openOwnRoom": "Open your room"
   },
   "room": {
     "title": "Pokémon TCG Night Auction",
@@ -51,15 +74,19 @@
     "lot": "LOT / 001",
     "active": "ACTIVE",
     "closed": "AUCTION CLOSED",
+    "endLive": "End Live",
+    "endingLive": "Ending…",
+    "endLiveBlocked": "Finish the active item before ending your live.",
+    "endLiveFailed": "Could not end the live. Try again.",
+    "videoLoginRequired": "Log in to watch the video.",
+    "loginToWatch": "Log in to watch",
     "noActiveItem": "No active item yet. The seller can create one after the room is live."
   },
   "item": {
-    "title": "Charizard Base Set (Near Mint)",
     "createTitle": "Add item",
     "titleLabel": "Item title",
     "titlePlaceholder": "Example: Charizard Base Set",
     "startPriceLabel": "Starting price (IDR)",
-    "priceLabel": "Starting price",
     "imageLabel": "Item photo",
     "imageHelp": "JPEG, PNG, or WebP · maximum 5MB",
     "createAction": "Create item",
@@ -70,8 +97,7 @@
     "liveRequired": "Use Go Live before creating an item.",
     "created": "Item created successfully",
     "relist": "Relist this item",
-    "deadline": "Server deadline",
-    "formPreview": "This form is a visual preview and does not submit data."
+    "deadline": "Server deadline"
   },
   "bid": {
     "currentPrice": "Current bid",
@@ -95,7 +121,6 @@
     "action": "BID →",
     "pending": "SUBMITTING…",
     "help": "Enter a whole IDR amount above the current bid. The server validates the amount and timestamp.",
-    "previewHelp": "This is a UI preview only; no bid will be submitted.",
     "accepted": "Bid accepted.",
     "tooLow": "Your bid must exceed the current price.",
     "closed": "This auction is closed.",
@@ -109,7 +134,6 @@
     "description": "The highest bid has been locked as the winner.",
     "priceLabel": "Winning bid",
     "payAction": "Continue to payment",
-    "preview": "This result page still uses visual fixtures.",
     "noWinner": "The auction closed with no bids. There is no winner or payment order."
   },
   "pay": {
@@ -126,8 +150,6 @@
     "qrHelp": "Use a sandbox payment app. Never use real funds for this demo.",
     "mockConfirm": "Confirm sandbox payment",
     "confirmPending": "Confirming…",
-    "preview": "The QR and status on this page still use fixtures.",
-    "relist": "Relist as a new item",
     "qrPending": "Creating or refreshing QRIS…",
     "qrLoadFailed": "QRIS is not available yet. Try again without creating a new order.",
     "retry": "Try again",

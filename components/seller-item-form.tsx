@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 
 import { formatIdr } from "@/lib/format";
-import type { Item, RoomStatus } from "@/lib/types";
+import type { Item } from "@/lib/types";
 
 type Notice = { kind: "error" | "success"; text: string } | null;
 
@@ -30,37 +30,16 @@ async function responseError(response: Response): Promise<unknown> {
 
 export function SellerItemForm({
   roomId,
-  roomStatus,
   relistItemId,
 }: {
   roomId: string;
-  roomStatus: RoomStatus;
   relistItemId?: string | null;
 }) {
   const t = useTranslations();
   const router = useRouter();
-  const [pending, setPending] = useState<"live" | "create" | "relist" | null>(null);
+  const [pending, setPending] = useState<"create" | "relist" | null>(null);
   const [notice, setNotice] = useState<Notice>(null);
   const [createdItem, setCreatedItem] = useState<Item | null>(null);
-  const isLive = roomStatus === "live";
-
-  async function goLive() {
-    setPending("live");
-    setNotice(null);
-    try {
-      const response = await fetch(`/api/rooms/${roomId}/go-live`, { method: "POST" });
-      if (!response.ok) {
-        setNotice({ kind: "error", text: t(`errors.${errorKey(await responseError(response))}`) });
-        return;
-      }
-      setNotice({ kind: "success", text: t("item.goLiveSuccess") });
-      router.refresh();
-    } catch {
-      setNotice({ kind: "error", text: t("errors.upstream") });
-    } finally {
-      setPending(null);
-    }
-  }
 
   async function createItem(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -117,30 +96,31 @@ export function SellerItemForm({
           <span className="section-label">SELLER CONTROL</span>
           <h2 id="seller-form-title">{t("item.createTitle")}</h2>
         </div>
-        <button className="btn btn-primary btn-small" type="button" onClick={relistItemId ? relist : goLive} disabled={pending !== null || (isLive && !relistItemId)}>
-          {pending === "live" ? t("item.goLivePending") : pending === "relist" ? t("item.createPending") : relistItemId ? t("item.relist") : isLive ? t("common.live") : t("item.goLive")}
-        </button>
+        {relistItemId ? (
+          <button className="btn btn-primary btn-small" type="button" onClick={relist} disabled={pending !== null}>
+            {pending === "relist" ? t("item.createPending") : t("item.relist")}
+          </button>
+        ) : <span className="utility-text">LIVE</span>}
       </div>
       <form className="seller-form" onSubmit={createItem}>
         <input type="hidden" name="roomId" value={roomId} />
         <label>
           <span>{t("item.titleLabel")}</span>
-          <input name="title" type="text" placeholder={t("item.titlePlaceholder")} maxLength={120} required disabled={!isLive || pending !== null} />
+          <input name="title" type="text" placeholder={t("item.titlePlaceholder")} maxLength={120} required disabled={pending !== null} />
         </label>
         <label>
           <span>{t("item.startPriceLabel")}</span>
-          <input name="startPrice" type="number" min={1} max={2147483647} step={1} inputMode="numeric" placeholder="1500000" required disabled={!isLive || pending !== null} />
+          <input name="startPrice" type="number" min={1} max={2147483647} step={1} inputMode="numeric" placeholder="1500000" required disabled={pending !== null} />
         </label>
         <label className="seller-file-input">
           <span>{t("item.imageLabel")}</span>
-          <input name="image" type="file" accept="image/jpeg,image/png,image/webp" required disabled={!isLive || pending !== null} />
+          <input name="image" type="file" accept="image/jpeg,image/png,image/webp" required disabled={pending !== null} />
           <small>{t("item.imageHelp")}</small>
         </label>
-        <button className="btn btn-secondary" type="submit" disabled={!isLive || pending !== null}>
+        <button className="btn btn-secondary" type="submit" disabled={pending !== null}>
           {pending === "create" ? t("item.createPending") : t("item.createAction")}
         </button>
       </form>
-      {!isLive ? <p className="form-note">{t("item.liveRequired")}</p> : null}
       {notice ? <p className={notice.kind === "error" ? "form-error" : "form-success"} role={notice.kind === "error" ? "alert" : "status"}>{notice.text}</p> : null}
       {createdItem ? (
         <output className="seller-created well">

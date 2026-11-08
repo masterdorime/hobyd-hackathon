@@ -1,7 +1,8 @@
 # 00 — Scope Freeze (HOBYD Hackathon, 12 jam)
 
-> **Status:** BEKU. Dokumen ini adalah kontrak. Kalau suatu hal tidak ada di
-> "IN-SCOPE", jangan dikerjakan — walau terlihat mudah.
+> **Status:** BEKU (Amandemen 2026-11-08: multi-user live rooms). Dokumen ini
+> adalah kontrak. Kalau suatu hal tidak ada di "IN-SCOPE", jangan dikerjakan —
+> walau terlihat mudah.
 
 ## Tujuan build
 
@@ -14,7 +15,7 @@ hanya jadi **acuan keputusan**, bukan kode yang disalin.
 
 Demo emas jalan end-to-end di URL Vercel produksi:
 
-1. Seller login → Go Live → add item (foto + judul + harga awal)
+1. Seller login → Start Live (nama room, kategori, thumbnail opsional) → add item (foto + judul + harga awal)
 2. ≥3 bidder login di browser berbeda → bid real-time (harga + feed bid sinkron)
 3. Bid di 10 detik terakhir → timer **extend +10s** (maks 5×)
 4. Timer habis → **winner lock** → halaman menang muncul
@@ -26,8 +27,9 @@ Kalau keenam poin itu jalan di produksi, build selesai — berhenti. Jangan tamb
 ## IN-SCOPE (6 fitur inti — hanya ini)
 
 1. **Auth** — Supabase Auth (email), auto-create profile.
-2. **Room** — `lobby/live/ended`, satu seller (allowlist email).
-3. **Item** — seller create: foto (Storage) + judul + `start_price`; server set `ends_at`.
+2. **Room** — satu room persisten per user terautentikasi; owner dapat Start/End Live;
+   kategori tetap dan thumbnail opsional. Client read-only.
+3. **Item** — owner room create: foto (Storage) + judul + `start_price`; server set `ends_at`.
 4. **Bid** — custom amount (integer IDR > `current_price`), otorisasi di server,
    rate limit 1/detik, urut timestamp server.
 5. **Anti-sniping + winner lock** — extend +10s (cap 5), closer idempoten.
@@ -40,12 +42,16 @@ Plus yang melekat wajib: **video LiveKit**, **i18n ID+EN**, **responsif (desktop
 Fitur yang ada di prototype lama tapi **TIDAK** dipakai di build ini:
 
 - Live chat
-- Kategori room (Sneakers/TCG/…)
 - Auction mode soft/hard (sudden-death) — cukup satu mode anti-sniping standar
-- Thumbnail room, theater mode, mobile viewer stack khusus
 - Sales inbox penjual, leaderboard reputasi, kontak handover WhatsApp
-- Auto-sweep stream telantar, verifikasi penjual, sengketa, multi-seller
+- Auto-sweep stream telantar, verifikasi penjual, sengketa
+- Lebih dari satu room per user, co-host, jadwal live, kreasi kategori
 - Video promosi/`/brag`, analitik, notifikasi
+
+Catatan amandemen: kategori room, thumbnail room, dan kemampuan semua user
+terautentikasi menjadi seller untuk room miliknya **kini in-scope** atas
+persetujuan eksplisit product owner. Larangan chat, auction mode, dan fitur lain
+di atas tetap berlaku.
 
 Alasan: **laporan pengembangan harus selaras dengan proposal.** Menambah fitur =
 melenceng dari proposal = risiko dinilai tidak konsisten.

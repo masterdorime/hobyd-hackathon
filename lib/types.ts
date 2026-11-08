@@ -12,6 +12,9 @@ export interface Room {
   id: string;
   title: string;
   seller_name: string;
+  owner_id: string | null;
+  category: import("./room-categories").RoomCategory | null;
+  thumbnail_url: string | null;
   status: RoomStatus;
   created_at: string;
 }

@@ -228,7 +228,6 @@ Aturan:
 | `NEXT_PUBLIC_LIVEKIT_URL` | LiveKit Cloud → project |
 | `LIVEKIT_API_KEY` / `LIVEKIT_API_SECRET` | LiveKit Cloud (**server-only**) |
 | `MIDTRANS_SERVER_KEY` / `MIDTRANS_CLIENT_KEY` | Midtrans sandbox |
-| `SELLER_ALLOWLIST` | email penjual demo (koma kalau lebih dari satu) |
 | `MAX_SNIPING_EXTENSIONS` | `5` |
 | `EXTENSION_WINDOW_SEC` | `10` |
 | `EXTENSION_ADD_SEC` | `10` |

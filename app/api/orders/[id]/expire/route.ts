@@ -1,8 +1,9 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-import { authErrorResponse, isSellerEmail, requireUser } from "@/lib/server/auth";
+import { authErrorResponse, AuthorizationError, requireUser } from "@/lib/server/auth";
 import { apiError } from "@/lib/server/http";
-import { getOrderForPayment, getOrderForWinner } from "@/lib/server/orders";
+import { getOrderForPayment } from "@/lib/server/orders";
+import { getRoom } from "@/lib/server/rooms";
 import { expireOrderIfDue } from "@/lib/server/order-transitions";
 
 export async function POST(
@@ -12,11 +13,13 @@ export async function POST(
   try {
     const user = await requireUser();
     const { id } = await params;
-    const result = isSellerEmail(user.email)
-      ? await getOrderForPayment(id)
-      : await getOrderForWinner(id, user.id);
+    const result = await getOrderForPayment(id);
     if (!result?.order) {
       return apiError("NOT_FOUND");
+    }
+    const room = await getRoom(result.item.room_id);
+    if (result.order.winner !== user.id && room?.owner_id !== user.id) {
+      throw new AuthorizationError("FORBIDDEN");
     }
 
     const transition = await expireOrderIfDue(id, Date.now());

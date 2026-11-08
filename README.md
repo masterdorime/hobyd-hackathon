@@ -11,17 +11,32 @@ Telkom University.
 
 Repositori: `https://github.com/masterdorime/hobyd-hackathon`
 
-🚧 **Dalam pengerjaan (build 12 jam).** Lengkapi bagian di bawah setelah web jalan:
+- Live URL: `https://hobyd-hackathon.vercel.app`
+- Setup production: `docs/SETUP.md`
+- Demo script: `docs/03-demo-scenario.md`
 
-- [x] Live URL Vercel: `https://hobyd-hackathon.vercel.app`
-- [ ] Screenshot / GIF demo
-- [ ] Arsitektur ringkas (video ↔ state terpisah, bid server-authoritative)
+## Arsitektur
+
+- Browser hanya membaca data publik lewat Supabase RLS dan Realtime.
+- Semua mutasi melewati Route Handler dengan service-role setelah verifikasi user.
+- `place_bid` dan `close_item` berjalan atomik di Postgres dengan jam database.
+- Anti-sniping memperpanjang maksimal 5× saat sisa waktu kurang dari 10 detik.
+- LiveKit hanya membawa media. Kegagalan video tidak menghentikan bid.
+- QRIS, status pembayaran, expiry, dan winner selalu diputuskan server.
+
+## Verifikasi
+
+- Unit/contract test dan integrasi Supabase dijalankan sebelum setiap deploy.
+- `npm run typecheck`, `npm run lint`, `npx vitest run`, dan `npx next build` wajib lulus.
+- Golden path production mencakup tiga bidder, anti-sniping, winner lock, satu order,
+  QR create/resume, verified webhook, expiry, relist, dan bid saat video mati.
 
 ## Fitur (MVP)
 
 - Auth + profil (Supabase)
 - Room live + item (foto, judul, harga awal)
 - Bidding real-time, **divalidasi server** (harga & riwayat sinkron ke semua klien)
+- Multi-room: setiap user login dapat Start Live dengan nama, kategori, dan thumbnail opsional
 - **Anti-sniping**: bid di 10 detik terakhir memperpanjang timer (+10s, maks 5×)
 - **Winner lock** otomatis saat timer habis
 - Pembayaran **QRIS sandbox** (jendela 5 menit, `pending → paid | expired`)

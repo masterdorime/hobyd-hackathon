@@ -5,7 +5,6 @@
   },
   "common": {
     "brandDescription": "Live auction untuk kolektor",
-    "preview": "UI PREVIEW",
     "live": "LIVE",
     "lobby": "Lobby",
     "login": "Masuk",
@@ -13,8 +12,7 @@
     "language": "Bahasa",
     "seller": "Seller",
     "bidder": "Bidder",
-    "backToLobby": "Kembali ke lobby",
-    "demoSeller": "Demo Seller"
+    "backToLobby": "Kembali ke lobby"
   },
   "auth": {
     "title": "Masuk untuk mulai bidding.",
@@ -30,13 +28,38 @@
     "back": "Kembali ke lobby",
     "signedInAs": "Masuk sebagai {name}"
   },
+  "categories": {
+    "pokemon": "Pokémon TCG",
+    "onePiece": "One Piece TCG",
+    "yuGiOh": "Yu-Gi-Oh! TCG",
+    "mtg": "Magic: The Gathering",
+    "sports": "Sports Cards",
+    "other": "Lainnya"
+  },
   "lobby": {
     "eyebrow": "PILIH LIVE ROOM",
     "title": "Masuk ke live auction.",
     "description": "Lihat item yang sedang ditawar, masuk ke room, lalu ajukan bid terbaikmu.",
     "enterRoom": "Masuk room",
-    "empty": "Belum ada room aktif.",
-    "seedNotice": "Data pada halaman ini hanya fixture untuk menyetujui tampilan."
+    "empty": "Belum ada room live.",
+    "videoAndBids": "Video + realtime bidding",
+    "liveRooms": "LIVE SEKARANG",
+    "creatorLabel": "RUANG SELLER",
+    "startTitle": "Mulai live kamu.",
+    "startDescription": "Isi nama room, kategori, dan thumbnail opsional.",
+    "roomName": "Nama room",
+    "roomNamePlaceholder": "Contoh: Pokémon Night Live",
+    "roomNameRequired": "Nama room wajib diisi.",
+    "category": "Kategori",
+    "thumbnail": "Thumbnail (opsional)",
+    "thumbnailHelp": "JPEG, PNG, atau WebP · maksimum 5MB",
+    "thumbnailKeep": "Kosongkan untuk mempertahankan thumbnail saat ini.",
+    "startAction": "Start Live →",
+    "starting": "Menyiapkan live…",
+    "loginToStart": "Masuk untuk mulai live dan menonton room kolektor lain.",
+    "loginAction": "Masuk",
+    "alreadyLive": "Room kamu sedang live.",
+    "openOwnRoom": "Masuk ke room kamu"
   },
   "room": {
     "title": "Pokémon TCG Night Auction",
@@ -51,15 +74,19 @@
     "lot": "LOT / 001",
     "active": "AKTIF",
     "closed": "LELANG SELESAI",
+    "endLive": "End Live",
+    "endingLive": "Mengakhiri…",
+    "endLiveBlocked": "Selesaikan item aktif sebelum mengakhiri live.",
+    "endLiveFailed": "Live belum dapat diakhiri. Coba lagi.",
+    "videoLoginRequired": "Masuk untuk menonton video.",
+    "loginToWatch": "Masuk untuk menonton",
     "noActiveItem": "Belum ada item aktif. Seller dapat membuat item setelah room live."
   },
   "item": {
-    "title": "Charizard Base Set (Near Mint)",
     "createTitle": "Tambah item",
     "titleLabel": "Judul item",
     "titlePlaceholder": "Contoh: Charizard Base Set",
     "startPriceLabel": "Harga awal (IDR)",
-    "priceLabel": "Harga awal",
     "imageLabel": "Foto item",
     "imageHelp": "JPEG, PNG, atau WebP · maksimum 5MB",
     "createAction": "Buat item",
@@ -70,8 +97,7 @@
     "liveRequired": "Aktifkan room dengan Go Live sebelum membuat item.",
     "created": "Item berhasil dibuat",
     "relist": "Relist item ini",
-    "deadline": "Batas akhir server",
-    "formPreview": "Form hanya pratinjau dan belum mengirim data."
+    "deadline": "Batas akhir server"
   },
   "bid": {
     "currentPrice": "Harga berjalan",
@@ -95,7 +121,6 @@
     "action": "BID →",
     "pending": "MENGIRIM…",
     "help": "Masukkan integer IDR di atas harga berjalan. Server memvalidasi nominal dan timestamp.",
-    "previewHelp": "Tombol hanya pratinjau UI; belum ada bid yang dikirim.",
     "accepted": "Bid diterima.",
     "tooLow": "Bid harus lebih besar dari harga berjalan.",
     "closed": "Lelang sudah ditutup.",
@@ -109,7 +134,6 @@
     "description": "Bid tertinggi telah dikunci sebagai pemenang.",
     "priceLabel": "Bid kemenangan",
     "payAction": "Lanjut ke pembayaran",
-    "preview": "Halaman hasil ini masih menggunakan fixture.",
     "noWinner": "Lelang selesai tanpa bid. Tidak ada pemenang atau order pembayaran."
   },
   "pay": {
@@ -126,8 +150,6 @@
     "qrHelp": "Gunakan aplikasi pembayaran sandbox. Jangan gunakan dana nyata dalam demo ini.",
     "mockConfirm": "Konfirmasi pembayaran sandbox",
     "confirmPending": "Mengonfirmasi…",
-    "preview": "QR dan status pada halaman ini masih berupa fixture.",
-    "relist": "Relist sebagai item baru",
     "qrPending": "Membuat atau memperbarui QRIS…",
     "qrLoadFailed": "QRIS belum tersedia. Coba lagi tanpa membuat order baru.",
     "retry": "Coba lagi",

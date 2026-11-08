@@ -12,7 +12,7 @@ import type { BidWithName, Item, PlaceBidResult } from "@/lib/types";
 type ItemPanelProps = {
   item: Item;
   bids: BidWithName[];
-  previewEndsAt: string;
+  endsAt: string;
   onBid(amount: number): Promise<PlaceBidResult | null>;
   onElapsed(): Promise<unknown>;
   pending: boolean;
@@ -24,7 +24,7 @@ type ItemPanelProps = {
 export function ItemPanel({
   item,
   bids,
-  previewEndsAt,
+  endsAt,
   onBid,
   onElapsed,
   pending,
@@ -55,7 +55,7 @@ export function ItemPanel({
           </div>
         </div>
         <div className="auction-controls">
-          <Countdown endsAt={previewEndsAt} extensionsUsed={item.extensions_used} onElapsed={onElapsed} closePending={closePending} />
+          <Countdown endsAt={endsAt} extensionsUsed={item.extensions_used} onElapsed={onElapsed} closePending={closePending} />
           <BidForm key={`${item.id}:${item.current_price}`} currentPrice={item.current_price} onBid={onBid} pending={pending} disabled={item.status === "closed" || closePending} />
           <FormatAuctionFeedback feedback={feedback} />
           <CountUpAnnouncement bids={bids} />

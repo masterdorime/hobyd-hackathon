@@ -10,6 +10,13 @@ create table rooms (
   id uuid primary key default gen_random_uuid(),
   title text not null,
   seller_name text not null,
+  owner_id uuid unique references profiles(id) on delete set null,
+  category text check (
+    category is null or category in (
+      'pokemon-tcg','one-piece-tcg','yu-gi-oh-tcg','mtg','sports-cards','other'
+    )
+  ),
+  thumbnail_url text,
   status text not null check (status in ('lobby','live','ended')) default 'lobby',
   created_at timestamptz not null default now()
 );
@@ -49,6 +56,12 @@ create table orders (
 
 create index bids_item_time_idx on bids (item_id, created_at desc);
 create index items_room_status_idx on items (room_id, status);
+
+-- Existing installations: one persistent room per owner and editable discovery metadata.
+alter table public.rooms add column if not exists owner_id uuid references public.profiles(id) on delete set null;
+alter table public.rooms add column if not exists category text;
+alter table public.rooms add column if not exists thumbnail_url text;
+create unique index if not exists rooms_owner_unique_idx on public.rooms (owner_id) where owner_id is not null;
 
 alter table rooms enable row level security;
 alter table items enable row level security;

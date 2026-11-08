@@ -1,7 +1,7 @@
 import type { User } from "@supabase/supabase-js";
 
 import { getAuctionConfig } from "./config";
-import { requireSeller } from "./auth";
+import { AuthorizationError, requireUser } from "./auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createServerSupabase } from "@/lib/supabase/server";
 import type { Item, ItemStatus } from "@/lib/types";
@@ -77,7 +77,7 @@ export interface RelistSource {
 }
 
 export async function getRelistSourceForSeller(itemId: string): Promise<RelistSource> {
-  await requireSeller();
+  const user = await requireUser();
   const admin = createAdminClient();
   const { data: order, error: orderError } = await admin
     .from("orders")
@@ -95,6 +95,14 @@ export async function getRelistSourceForSeller(itemId: string): Promise<RelistSo
     .maybeSingle();
   if (itemError || !item) {
     throw new Error("RELIST_NOT_ALLOWED");
+  }
+  const { data: room, error: roomError } = await admin
+    .from("rooms")
+    .select("owner_id")
+    .eq("id", item.room_id)
+    .maybeSingle();
+  if (roomError || !room || room.owner_id !== user.id) {
+    throw new AuthorizationError("FORBIDDEN");
   }
   return {
     room_id: item.room_id,

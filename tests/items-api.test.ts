@@ -8,7 +8,8 @@ import type { Item } from "../lib/types";
 const ROOM_ID = "00000000-0000-4000-8000-000000000001";
 
 const mocks = vi.hoisted(() => ({
-  requireSeller: vi.fn(),
+  requireUser: vi.fn(),
+  getRoom: vi.fn(),
   createAdminClient: vi.fn(),
   storageFrom: vi.fn(),
   upload: vi.fn(),
@@ -19,7 +20,11 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock("../lib/server/auth", async (importOriginal) => ({
   ...(await importOriginal()),
-  requireSeller: mocks.requireSeller,
+  requireUser: mocks.requireUser,
+}));
+vi.mock("../lib/server/rooms", async (importOriginal) => ({
+  ...(await importOriginal()),
+  getRoom: mocks.getRoom,
 }));
 
 vi.mock("../lib/supabase/admin", () => ({
@@ -57,7 +62,17 @@ function validForm(): FormData {
 }
 
 beforeEach(() => {
-  mocks.requireSeller.mockResolvedValue({ id: "seller-user-id" });
+  mocks.requireUser.mockResolvedValue({ id: "seller-user-id" });
+  mocks.getRoom.mockResolvedValue({
+    id: ROOM_ID,
+    title: "Owned room",
+    seller_name: "Owner",
+    owner_id: "seller-user-id",
+    category: "pokemon-tcg",
+    thumbnail_url: null,
+    status: "live",
+    created_at: "2026-11-08T00:00:00.000Z",
+  });
   mocks.storageFrom.mockReturnValue({
     upload: mocks.upload,
     remove: mocks.remove,
@@ -76,16 +91,27 @@ beforeEach(() => {
 });
 
 describe("POST /api/items", () => {
-  it.each([
-    ["anonymous", "UNAUTHORIZED", 401],
-    ["non-seller", "FORBIDDEN", 403],
-  ] as const)("returns %i for %s", async (_case, code, status) => {
-    mocks.requireSeller.mockRejectedValue(new AuthorizationError(code));
+  it("returns 401 for anonymous callers", async () => {
+    mocks.requireUser.mockRejectedValue(new AuthorizationError("UNAUTHORIZED"));
 
     const response = await POST(requestWith(validForm()));
 
-    expect(response.status).toBe(status);
-    expect(await response.json()).toEqual({ error: code });
+    expect(response.status).toBe(401);
+    expect(await response.json()).toEqual({ error: "UNAUTHORIZED" });
+    expect(mocks.createAdminClient).not.toHaveBeenCalled();
+  });
+
+  it("returns 403 when the authenticated user does not own the room", async () => {
+    mocks.getRoom.mockResolvedValue({
+      id: ROOM_ID,
+      owner_id: "different-user",
+      status: "live",
+    });
+
+    const response = await POST(requestWith(validForm()));
+
+    expect(response.status).toBe(403);
+    expect(await response.json()).toEqual({ error: "FORBIDDEN" });
     expect(mocks.createAdminClient).not.toHaveBeenCalled();
   });
 
@@ -98,7 +124,7 @@ describe("POST /api/items", () => {
     expect(response.status).toBe(400);
     expect(await response.json()).toEqual({ error: "INVALID_INPUT" });
     expect(mocks.createAdminClient).not.toHaveBeenCalled();
-    expect(mocks.upload).not.toHaveBeenCalled();
+    expect(mocks.getRoom).not.toHaveBeenCalled();
     expect(mocks.rpc).not.toHaveBeenCalled();
   });
 

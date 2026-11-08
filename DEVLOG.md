@@ -18,4 +18,5 @@ Format: `YYYY-MM-DD HH:MM | tahap | kejadian | keputusan/aksi`
 - 2026-11-08 | Tahap 4 | `cacheComponents` Supabase SSR memicu background `Date.now` saat prerender | Gunakan App Router standar; matikan `cacheComponents`+`partialPrefetching`, jadikan route live/auth dinamis
 - 2026-11-08 | Tahap 6 | Optimasi adaptive media mengganggu first-frame subscriber | Gunakan default `Room` LiveKit; auction tetap independen dari status media
 - 2026-11-08 | Tahap 7 | Suspense memulai stream 200 sebelum penolakan owner | Aktifkan `authInterrupts`, hapus boundary cache-mode lama agar 403 non-winner benar
-- 2026-11-08 | Tahap 8 | Refresh QRID tidak boleh mereset lima menit atau membuat charge baru | Simpan transaction/action QRIS di order, gunakan sisa waktu server, dan batasi transisi ke pending-only
+- 2026-11-08 | Tahap 8 | QRIS resume tidak boleh membuat charge baru | Simpan transaction/action QRIS di order, gunakan sisa waktu server, dan batasi transisi ke pending-only
+- 2026-11-08 | Amandemen | Semua user login boleh punya satu room live | Tambah owner_id unik, nama/kategori/thumbnail; `SELLER_ALLOWLIST` dipensiunkan sebagai gate

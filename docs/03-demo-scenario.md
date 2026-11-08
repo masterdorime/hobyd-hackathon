@@ -7,7 +7,7 @@
 
 - [ ] URL produksi Vercel terbuka & responsif (cek `/id` dan `/en`).
 - [ ] **Seed data**: 1 room status `live`, `seller_name` sudah terisi.
-- [ ] Akun siap: **1 seller** (allowlist) + **3 akun bidder**, semua sudah login di
+- [ ] Akun siap: **1 seller** (user pemilik room) + **3 akun bidder**, semua sudah login di
       browser berbeda (atau jendela incognito terpisah).
 - [ ] Kamera penjual dikonfirmasi publish (video tampil di sisi viewer).
 - [ ] Koneksi internet stabil; HP penjual sudah izin kamera.

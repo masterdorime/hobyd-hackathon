@@ -34,7 +34,7 @@ Bikin project baru (jangan pakai data prototype):
       setelah deploy: `https://<app>.vercel.app/api/orders/webhook`.
 - [ ] **Vercel**: import repo (nanti setelah push) / siapkan CLI.
 - [ ] Salin `.env.example` → `.env.local`, isi semua.
-- [ ] Tentukan `SELLER_ALLOWLIST` = email penjual demo.
+- [ ] Tentukan akun seller demo (setiap user terautentikasi otomatis dapat menjadi seller room miliknya).
 
 > Kalau satu layanan belum siap, **jangan berhenti** — pakai placeholder dan lanjut
 > bagian lain; integrasi diisi saat checkpoint.

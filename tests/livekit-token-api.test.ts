@@ -29,9 +29,8 @@ beforeEach(() => {
   vi.stubEnv("LIVEKIT_API_KEY", "test-api-key");
   vi.stubEnv("LIVEKIT_API_SECRET", "test-api-secret");
   vi.stubEnv("NEXT_PUBLIC_LIVEKIT_URL", "wss://test-livekit.invalid");
-  vi.stubEnv("SELLER_ALLOWLIST", "seller@example.com");
   mocks.requireUser.mockResolvedValue({ id: "auth-bidder-id", email: "bidder@example.com" });
-  mocks.getRoom.mockResolvedValue({ id: "room-001" });
+  mocks.getRoom.mockResolvedValue({ id: "room-001", owner_id: "different-owner" });
   mocks.accessToken.mockImplementation(function () {
     return {
       addGrant: mocks.addGrant,
@@ -82,8 +81,9 @@ describe("GET /api/livekit-token", () => {
     });
   });
 
-  it("allows publish only for the authenticated allowlisted seller", async () => {
+  it("allows publish only for the room owner", async () => {
     mocks.requireUser.mockResolvedValue({ id: "auth-seller-id", email: "seller@example.com" });
+    mocks.getRoom.mockResolvedValue({ id: "room-001", owner_id: "auth-seller-id" });
     mocks.createServerSupabase.mockResolvedValue({
       from: () => ({ select: () => ({ eq: () => ({ single: async () => ({ data: { name: "Seller Name" }, error: null }) }) }) }),
     });

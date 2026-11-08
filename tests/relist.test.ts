@@ -7,14 +7,14 @@ import {
 import type { Item } from "../lib/types";
 
 const mocks = vi.hoisted(() => ({
-  requireSeller: vi.fn(),
+  requireUser: vi.fn(),
   createAdminClient: vi.fn(),
   from: vi.fn(),
   rpc: vi.fn(),
 }));
 vi.mock("../lib/server/auth", async (importOriginal) => ({
   ...(await importOriginal()),
-  requireSeller: mocks.requireSeller,
+  requireUser: mocks.requireUser,
 }));
 vi.mock("../lib/supabase/admin", () => ({ createAdminClient: mocks.createAdminClient }));
 
@@ -35,12 +35,12 @@ let orderStatus = "expired";
 
 beforeEach(() => {
   orderStatus = "expired";
-  mocks.requireSeller.mockResolvedValue({ id: "seller-id" });
+  mocks.requireUser.mockResolvedValue({ id: "seller-id" });
   mocks.from.mockImplementation((table: string) => ({
     select: () => ({
       eq: () => ({
         maybeSingle: async () => ({
-          data: table === "orders" ? { status: orderStatus } : item,
+          data: table === "orders" ? { status: orderStatus } : table === "rooms" ? { owner_id: "seller-id" } : item,
           error: null,
         }),
       }),

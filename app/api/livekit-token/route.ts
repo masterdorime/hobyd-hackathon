@@ -1,7 +1,7 @@
 import { AccessToken } from "livekit-server-sdk";
 import { NextResponse, type NextRequest } from "next/server";
 
-import { authErrorResponse, isSellerEmail, requireUser } from "@/lib/server/auth";
+import { authErrorResponse, requireUser } from "@/lib/server/auth";
 import { getRequiredEnv } from "@/lib/server/config";
 import { apiError } from "@/lib/server/http";
 import { videoGrantFor } from "@/lib/server/livekit-grants";
@@ -11,14 +11,15 @@ import { createServerSupabase } from "@/lib/supabase/server";
 export async function GET(request: NextRequest) {
   try {
     const user = await requireUser();
-    const grant = videoGrantFor(
+    const requestedRoom = videoGrantFor(
       request.nextUrl.searchParams.get("room_id") ?? "",
-      isSellerEmail(user.email),
+      false,
     );
-    const room = await getRoom(grant.room!);
+    const room = await getRoom(requestedRoom.room!);
     if (!room) {
       return apiError("NOT_FOUND");
     }
+    const grant = videoGrantFor(room.id, room.owner_id === user.id);
     if (
       !process.env.LIVEKIT_API_KEY ||
       !process.env.LIVEKIT_API_SECRET ||

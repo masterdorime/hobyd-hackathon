@@ -2,11 +2,12 @@ import { notFound } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 
+import { EndLiveButton } from "@/components/end-live-button";
 import { LiveAuction } from "@/components/live-auction";
+import { categoryLabel } from "@/components/room-card";
 import { SellerItemForm } from "@/components/seller-item-form";
 import { getAuctionSnapshot } from "@/lib/server/auction";
 import { getRelistSourceForSeller } from "@/lib/server/items";
-import { isSellerEmail } from "@/lib/server/auth";
 import { getRoom } from "@/lib/server/rooms";
 import { createServerSupabase } from "@/lib/supabase/server";
 import type { BidWithName, Item, Room } from "@/lib/types";
@@ -27,7 +28,8 @@ export default async function RoomPage({ params }: RoomPageProps) {
     notFound();
   }
 
-  const canSell = isSellerEmail(auth.data.user?.email);
+  const canSell = Boolean(auth.data.user && room.owner_id === auth.data.user.id);
+  const authenticated = Boolean(auth.data.user);
   let relistItemId: string | null = null;
   if (canSell && snapshot.item?.status === "closed") {
     try {
@@ -46,7 +48,9 @@ export default async function RoomPage({ params }: RoomPageProps) {
       initialItem={snapshot.item}
       initialBids={snapshot.bids}
       canSell={canSell}
+      authenticated={authenticated}
       relistItemId={relistItemId}
+      hasActiveItem={Boolean(snapshot.item && snapshot.item.status !== "closed")}
     />
   );
 }
@@ -56,29 +60,37 @@ function RoomContent({
   initialItem,
   initialBids,
   canSell,
+  authenticated,
   relistItemId,
+  hasActiveItem,
 }: {
   room: Room;
   initialItem: Item | null;
   initialBids: BidWithName[];
   canSell: boolean;
+  authenticated: boolean;
   relistItemId: string | null;
+  hasActiveItem: boolean;
 }) {
   const roomText = useTranslations("room");
   const common = useTranslations("common");
+  const categories = useTranslations("categories");
 
   return (
     <main className="page-shell page-shell-room">
       <section className="room-title-row">
         <div>
-          <span className="eyebrow">{room.status.toUpperCase()}</span>
+          <span className="eyebrow">{room.status.toUpperCase()}{categoryLabel(room.category, categories) ? ` / ${categoryLabel(room.category, categories)}` : ""}</span>
           <h1>{room.title}</h1>
           <p>{roomText("hostedBy", { seller: room.seller_name })}</p>
         </div>
-        <span className="status-live"><span className="status-dot" />{room.status === "live" ? common("live") : room.status.toUpperCase()}</span>
+        <div className="room-title-actions">
+          <span className="status-live"><span className="status-dot" />{room.status === "live" ? common("live") : room.status.toUpperCase()}</span>
+          {canSell && room.status === "live" ? <EndLiveButton roomId={room.id} blocked={hasActiveItem} /> : null}
+        </div>
       </section>
-      <LiveAuction room={room} initialItem={initialItem} initialBids={initialBids} canSell={canSell} />
-      {canSell ? <SellerItemForm roomId={room.id} roomStatus={room.status} relistItemId={relistItemId} /> : null}
+      <LiveAuction room={room} initialItem={initialItem} initialBids={initialBids} canSell={canSell} authenticated={authenticated} />
+      {canSell && room.status === "live" ? <SellerItemForm roomId={room.id} relistItemId={relistItemId} /> : null}
     </main>
   );
 }
