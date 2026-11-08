@@ -1,29 +1,37 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Barlow_Condensed, IBM_Plex_Mono, Instrument_Sans } from "next/font/google";
+import type { ReactNode } from "react";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const display = Barlow_Condensed({
+  variable: "--font-display",
   subsets: ["latin"],
+  weight: ["600", "700", "800", "900"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const body = Instrument_Sans({
+  variable: "--font-body",
   subsets: ["latin"],
+  display: "swap",
+});
+
+const utility = IBM_Plex_Mono({
+  variable: "--font-utility",
+  subsets: ["latin"],
+  weight: ["500", "600"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "HOBYD — Live Auction untuk Kolektor",
-  description: "Live auction real-time untuk kolektor Indonesia.",
+  title: "HOBYD",
+  description: "Real-time live auctions for Indonesian collectors.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html
-      lang="id"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="id" className={`${display.variable} ${body.variable} ${utility.variable}`}>
+      <body>{children}</body>
     </html>
   );
 }

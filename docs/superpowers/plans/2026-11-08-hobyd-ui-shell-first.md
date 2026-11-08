@@ -96,7 +96,7 @@ After explicit confirmation, add remote `https://github.com/masterdorime/hobyd-h
 ### Task 2: Localized design foundation and full fixture-backed UI shell
 
 **Files:**
-- Create: `i18n/routing.ts`, `i18n/navigation.ts`, `i18n/request.ts`, `messages/id.json`, `messages/en.json`, `middleware.ts`, `app/[locale]/layout.tsx`, `app/[locale]/page.tsx`, `app/[locale]/room/[roomId]/page.tsx`, `app/[locale]/win/[itemId]/page.tsx`, `app/[locale]/pay/[orderId]/page.tsx`, `components/site-header.tsx`, `components/language-toggle.tsx`, `components/room-card.tsx`, `components/live-video.tsx`, `components/item-panel.tsx`, `components/bid-form.tsx`, `components/bid-feed.tsx`, `components/countdown.tsx`, `components/order-summary.tsx`, `components/qr-payment.tsx`, `components/seller-item-form.tsx`, `lib/types.ts`, `lib/format.ts`, `lib/demo-data.ts`, `tests/i18n.test.ts`, `tests/format.test.ts`.
+- Create: `i18n/routing.ts`, `i18n/navigation.ts`, `i18n/request.ts`, `messages/id.json`, `messages/en.json`, `proxy.ts`, `app/[locale]/layout.tsx`, `app/[locale]/page.tsx`, `app/[locale]/room/[roomId]/page.tsx`, `app/[locale]/win/[itemId]/page.tsx`, `app/[locale]/pay/[orderId]/page.tsx`, `components/site-header.tsx`, `components/language-toggle.tsx`, `components/room-card.tsx`, `components/live-video.tsx`, `components/item-panel.tsx`, `components/bid-form.tsx`, `components/bid-feed.tsx`, `components/countdown.tsx`, `components/order-summary.tsx`, `components/qr-payment.tsx`, `components/seller-item-form.tsx`, `lib/types.ts`, `lib/format.ts`, `lib/demo-data.ts`, `tests/i18n.test.ts`, `tests/format.test.ts`.
 - Modify: `next.config.ts`, `app/layout.tsx`, `app/globals.css`, `app/page.tsx`.
 
 **Interfaces:**
@@ -142,7 +142,7 @@ At 360px and desktop, verify no horizontal overflow and compare hierarchy with `
 
 **Files:**
 - Create: `lib/supabase/client.ts`, `lib/supabase/server.ts`, `lib/supabase/admin.ts`, `lib/server/auth.ts`, `lib/server/http.ts`, `app/login/page.tsx`, `components/login-form.tsx`, `tests/auth.test.ts`, `tests/http.test.ts`.
-- Modify: `middleware.ts`, `.env.example` only if a name needs clarification, `components/site-header.tsx`.
+- Modify: `proxy.ts`, `.env.example` only if a name needs clarification, `components/site-header.tsx`.
 
 **Interfaces:**
 - Consumes: `getRequiredEnv`, catalogs, and shell.
