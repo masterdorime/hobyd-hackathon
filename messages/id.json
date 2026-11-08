@@ -16,6 +16,20 @@
     "backToLobby": "Kembali ke lobby",
     "demoSeller": "Demo Seller"
   },
+  "auth": {
+    "title": "Masuk untuk mulai bidding.",
+    "description": "Gunakan email dan password akun demo yang sudah terdaftar.",
+    "email": "Email",
+    "password": "Password",
+    "emailPlaceholder": "kamu@example.com",
+    "passwordPlaceholder": "Password akun",
+    "submit": "Masuk ke HOBYD",
+    "pending": "Memeriksa…",
+    "loginFailed": "Email atau password tidak sesuai.",
+    "unavailable": "Login tidak tersedia. Periksa konfigurasi dan coba lagi.",
+    "back": "Kembali ke lobby",
+    "signedInAs": "Masuk sebagai {name}"
+  },
   "lobby": {
     "eyebrow": "PILIH LIVE ROOM",
     "title": "Masuk ke live auction.",

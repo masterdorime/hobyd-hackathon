@@ -16,6 +16,20 @@
     "backToLobby": "Back to lobby",
     "demoSeller": "Demo Seller"
   },
+  "auth": {
+    "title": "Log in to start bidding.",
+    "description": "Use the email and password for your registered demo account.",
+    "email": "Email",
+    "password": "Password",
+    "emailPlaceholder": "you@example.com",
+    "passwordPlaceholder": "Account password",
+    "submit": "Log in to HOBYD",
+    "pending": "Checking…",
+    "loginFailed": "Incorrect email or password.",
+    "unavailable": "Login is unavailable. Check the configuration and try again.",
+    "back": "Back to lobby",
+    "signedInAs": "Signed in as {name}"
+  },
   "lobby": {
     "eyebrow": "CHOOSE A LIVE ROOM",
     "title": "Enter a live auction.",

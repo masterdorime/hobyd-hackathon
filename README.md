@@ -13,7 +13,7 @@ Repositori: `https://github.com/masterdorime/hobyd-hackathon`
 
 🚧 **Dalam pengerjaan (build 12 jam).** Lengkapi bagian di bawah setelah web jalan:
 
-- [ ] Live URL Vercel: `https://<app>.vercel.app`
+- [x] Live URL Vercel: `https://hobyd-hackathon.vercel.app`
 - [ ] Screenshot / GIF demo
 - [ ] Arsitektur ringkas (video ↔ state terpisah, bid server-authoritative)
 

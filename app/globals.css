@@ -108,7 +108,7 @@ button:disabled, input:disabled { cursor: not-allowed; opacity: .58; }
   gap: 1rem;
 }
 .brand-link { display: inline-flex; align-items: center; gap: .875rem; }
-.brand-link img { width: 5.75rem; height: 2.375rem; object-fit: contain; }
+.brand-link img { width: 5.75rem; height: auto; object-fit: contain; }
 .brand-tagline { max-width: 9rem; color: var(--smoke); font-size: .6875rem; line-height: 1.3; }
 .header-actions { display: flex; align-items: center; gap: .75rem; }
 .language-toggle {
@@ -281,6 +281,20 @@ button:disabled, input:disabled { cursor: not-allowed; opacity: .58; }
 .qr-image-wrap { width: min(100%, 19rem); margin: 1.25rem auto 0; padding: .75rem; border-radius: .625rem; background: var(--warm-paper); }
 .qr-image-wrap img { display: block; width: 100%; height: auto; }
 .qr-confirm { width: 100%; margin-top: 1rem; }
+
+.account-control { display: flex; align-items: center; gap: .625rem; }
+.account-name { max-width: 10rem; overflow: hidden; color: var(--warm-paper); font-size: .75rem; text-overflow: ellipsis; white-space: nowrap; }
+.login-page { display: grid; min-height: 100vh; place-items: center; padding: 1.5rem; }
+.login-panel { width: min(100%, 27rem); padding: clamp(1.25rem, 5vw, 2rem); border-radius: .875rem; }
+.login-panel > img { display: block; margin-bottom: 2rem; }
+.login-panel h1 { margin: .625rem 0; font-family: var(--display); font-size: 3rem; line-height: .95; }
+.login-panel > p { color: var(--smoke); font-size: .8125rem; }
+.login-form { display: grid; gap: .625rem; margin-top: 1.5rem; }
+.login-form label { margin-top: .5rem; color: var(--smoke); font-size: .75rem; }
+.login-form input { min-height: 3rem; padding: 0 .875rem; border: 1px solid var(--line); border-radius: .5rem; background: var(--well); color: var(--warm-paper); }
+.login-submit { width: 100%; margin-top: .75rem; }
+.login-error { margin: .25rem 0 0; color: var(--signal-coral); font-size: .75rem; }
+.login-back { display: inline-flex; min-height: 2.75rem; align-items: center; margin-top: .75rem; color: var(--foil-yellow); font-size: .75rem; }
 
 @media (max-width: 960px) {
   .live-layout, .payment-layout { grid-template-columns: minmax(0, 1fr); }
