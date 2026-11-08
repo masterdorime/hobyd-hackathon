@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/client";
 import type { AuctionSnapshot } from "./auction-realtime";
-import type { Bid, CloseItemResult, PlaceBidResult } from "@/lib/types";
+import type { Bid, CloseItemResult, Item, PlaceBidResult } from "@/lib/types";
 
 export class AuctionApiError extends Error {
   constructor(public readonly code: string) {
@@ -36,32 +36,31 @@ export async function closeItemRequest(itemId: string): Promise<CloseItemResult>
 
 export async function fetchAuctionSnapshot(roomId: string): Promise<AuctionSnapshot> {
   const supabase = createClient();
-  const { data: item, error: itemError } = await supabase
+  const { data: items, error: itemError } = await supabase
     .from("items")
     .select("*")
     .eq("room_id", roomId)
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
+    .order("created_at", { ascending: false });
   if (itemError) {
     throw new AuctionApiError("UPSTREAM_ERROR");
   }
-  if (!item) {
-    return { item: null, bids: [] };
+  const typedItems = (items ?? []) as Item[];
+  if (typedItems.length === 0) {
+    return { items: [], bids: [] };
   }
 
   const { data, error } = await supabase
     .from("bids")
     .select("id,item_id,bidder,amount,created_at,profiles(name)")
-    .eq("item_id", item.id)
+    .in("item_id", typedItems.map((item) => item.id))
     .order("created_at", { ascending: false })
-    .limit(20);
+    .limit(200);
   if (error) {
     throw new AuctionApiError("UPSTREAM_ERROR");
   }
 
   return {
-    item,
+    items: typedItems,
     bids: data.map(({ profiles, ...bid }) => {
       const profile = Array.isArray(profiles) ? profiles[0] : profiles;
       return {
@@ -78,6 +77,14 @@ export async function getCurrentUserId(): Promise<string> {
     throw new AuctionApiError("UNAUTHORIZED");
   }
   return data.user.id;
+}
+
+export async function startItemRequest(itemId: string): Promise<Item> {
+  const response = await fetch(`/api/items/${itemId}/start`, { method: "POST" });
+  if (!response.ok) {
+    throw await errorFrom(response);
+  }
+  return response.json() as Promise<Item>;
 }
 
 export type { Bid };

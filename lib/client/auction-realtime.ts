@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/client";
 import { fetchAuctionSnapshot } from "./auction-api";
 import type { Bid, BidWithName, Item } from "@/lib/types";
 
-export type AuctionSnapshot = { item: Item | null; bids: BidWithName[] };
+export type AuctionSnapshot = { items: Item[]; bids: BidWithName[] };
 export type AuctionConnectionState = "idle" | "connecting" | "connected" | "disconnected";
 
 export type AuctionRealtimeHandlers = {
@@ -109,23 +109,19 @@ export class AuctionRealtimeController {
   }
 
   private mergeItem(item: Item): void {
-    if (
-      this.disposed ||
-      (this._snapshot.item &&
-        this._snapshot.item.id !== item.id &&
-        this._snapshot.item.status !== "closed")
-    ) {
-      return;
-    }
-    this._snapshot = { ...this._snapshot, item };
+    if (this.disposed) return;
+    const exists = this._snapshot.items.some((candidate) => candidate.id === item.id);
+    const items = exists
+      ? this._snapshot.items.map((candidate) => candidate.id === item.id ? item : candidate)
+      : [item, ...this._snapshot.items];
+    this._snapshot = { ...this._snapshot, items };
     this.options.onChange(this._snapshot);
   }
 
   private insertBid(bid: BidWithName): void {
     if (
       this.disposed ||
-      !this._snapshot.item ||
-      this._snapshot.item.id !== bid.item_id ||
+      !this._snapshot.items.some((item) => item.id === bid.item_id) ||
       this._snapshot.bids.some((current) => current.id === bid.id)
     ) {
       return;
@@ -134,7 +130,7 @@ export class AuctionRealtimeController {
       ...this._snapshot,
       bids: [bid, ...this._snapshot.bids]
         .sort((left, right) => right.created_at.localeCompare(left.created_at))
-        .slice(0, 20),
+        .slice(0, 200),
     };
     this.options.onChange(this._snapshot);
   }

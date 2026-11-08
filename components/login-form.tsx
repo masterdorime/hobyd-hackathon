@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/client";
+import { PasswordField } from "@/components/password-field";
 
 export interface LoginMessages {
   email: string;
@@ -14,6 +15,8 @@ export interface LoginMessages {
   pending: string;
   loginFailed: string;
   unavailable: string;
+  showPassword: string;
+  hidePassword: string;
 }
 
 export function LoginForm({
@@ -67,16 +70,14 @@ export function LoginForm({
         onChange={(event) => setEmail(event.target.value)}
         placeholder={messages.emailPlaceholder}
       />
-      <label htmlFor="login-password">{messages.password}</label>
-      <input
-        id="login-password"
-        type="password"
-        autoComplete="current-password"
-        required
-        minLength={6}
+      <PasswordField
+        label={messages.password}
         value={password}
-        onChange={(event) => setPassword(event.target.value)}
+        onChange={setPassword}
+        autoComplete="current-password"
         placeholder={messages.passwordPlaceholder}
+        showLabel={messages.showPassword}
+        hideLabel={messages.hidePassword}
       />
       {error ? <p className="login-error" role="alert">{error}</p> : null}
       <button className="btn btn-primary login-submit" type="submit" disabled={pending}>

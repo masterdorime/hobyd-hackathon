@@ -68,6 +68,7 @@ export async function SiteHeader() {
           <span className="brand-tagline">{t("brandDescription")}</span>
         </Link>
         <nav className="header-actions" aria-label="Account and language">
+          <Link className="nav-live" href="/">{t("live")}</Link>
           <LanguageToggle />
           {viewer ? (
             <form className="account-control" action={signOut}>

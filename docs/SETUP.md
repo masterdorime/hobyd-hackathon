@@ -41,14 +41,17 @@ Isi `.env.local` dengan nama berikut. Nilai asli hanya disimpan lokal.
 2. Jalankan `supabase/schema.sql` di SQL Editor.
 3. Jalankan `supabase/seed.sql`.
 4. Buat bucket **public** bernama `item-images` dan `room-thumbnails`.
-5. Buat satu seller dan tiga bidder melalui **Authentication → Users**.
-6. Setiap user yang login dapat menjadi seller untuk room miliknya; tidak ada allowlist email.
+5. Sign-up mandiri tersedia di `/signup`; Route Handler membuat akun terkonfirmasi untuk demo.
+6. Setiap user yang login dapat menjadi seller untuk satu room miliknya; tidak ada allowlist email.
 
 Schema membuat RLS pada semua tabel. Client hanya mendapat `SELECT`; mutasi hanya
 lewat Route Handler dengan `SUPABASE_SECRET_KEY`. Setiap user memiliki maksimal
 satu room melalui unique `owner_id`, dengan nama, enam kategori tetap, dan
-thumbnail opsional. Fungsi `place_bid`, `close_item`, dan `create_live_item`
-mencabut akses `anon/authenticated` dan memberi akses hanya ke `service_role`.
+thumbnail opsional. Item pertama dibuat sebagai `listed`; seller memulai satu
+atau beberapa lot dari tab Seller, dan `start_item` menetapkan deadline server.
+Chat room hanya dapat dibaca user login dan ditulis melalui RPC rate-limited.
+Fungsi `place_bid`, `close_item`, `create_listing`, dan `start_item` mencabut
+akses `anon/authenticated` dan memberi akses hanya ke `service_role`.
 
 Reset data demo sebelum presentasi (hanya untuk room seed):
 

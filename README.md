@@ -33,8 +33,11 @@ Repositori: `https://github.com/masterdorime/hobyd-hackathon`
 
 ## Fitur (MVP)
 
-- Auth + profil (Supabase)
-- Room live + item (foto, judul, harga awal)
+- Auth + profil + **sign-up mandiri** (nama/email/password, auto-login)
+- Room live milik tiap user, kategori, thumbnail opsional, chat publik realtime
+- Seller membuat banyak listing, lalu **Start Bid** satu atau beberapa lot sekaligus
+- Password login/sign-up memiliki kontrol show/hide yang aksesibel
+- Navbar **Live** tersedia untuk masuk ke lobby/room
 - Bidding real-time, **divalidasi server** (harga & riwayat sinkron ke semua klien)
 - Multi-room: setiap user login dapat Start Live dengan nama, kategori, dan thumbnail opsional
 - **Anti-sniping**: bid di 10 detik terakhir memperpanjang timer (+10s, maks 5×)

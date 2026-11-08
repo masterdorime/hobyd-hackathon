@@ -1,5 +1,5 @@
 export type RoomStatus = "lobby" | "live" | "ended";
-export type ItemStatus = "lobby" | "live" | "ending" | "extended" | "closed";
+export type ItemStatus = "listed" | "lobby" | "live" | "ending" | "extended" | "closed";
 export type OrderStatus = "pending" | "paid" | "expired" | "cancelled";
 
 export interface Profile {
@@ -26,7 +26,7 @@ export interface Item {
   img_url: string;
   start_price: number;
   current_price: number;
-  ends_at: string;
+  ends_at: string | null;
   winner: string | null;
   extensions_used: number;
   status: ItemStatus;
@@ -40,6 +40,18 @@ export interface Bid {
   amount: number;
   created_at: string;
 }
+
+export interface ChatMessage {
+  id: string;
+  room_id: string;
+  user_id: string;
+  body: string;
+  created_at: string;
+}
+
+export type ChatMessageWithName = ChatMessage & {
+  profile_name: string;
+};
 
 export type BidWithName = Bid & {
   profile_name: string;

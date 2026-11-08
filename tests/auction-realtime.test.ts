@@ -22,7 +22,7 @@ const item: Item = {
 };
 
 function snapshot(currentPrice = 1500000): AuctionSnapshot {
-  return { item: { ...item, current_price: currentPrice }, bids: [] };
+  return { items: [{ ...item, current_price: currentPrice }], bids: [] };
 }
 
 describe("AuctionRealtimeController", () => {
@@ -65,7 +65,7 @@ describe("AuctionRealtimeController", () => {
     f.handlers.onBid(bid);
     f.handlers.onBid(bid);
 
-    expect(f.controller.snapshot.item?.current_price).toBe(1800000);
+    expect(f.controller.snapshot.items[0].current_price).toBe(1800000);
     expect(f.controller.snapshot.bids).toEqual([bid]);
     expect(f.onChange).toHaveBeenCalledTimes(2);
   });
@@ -81,7 +81,7 @@ describe("AuctionRealtimeController", () => {
     f.handlers.onStatus("SUBSCRIBED");
     f.handlers.onStatus("SUBSCRIBED");
     await vi.waitFor(() => expect(f.refetchSnapshot).toHaveBeenCalledTimes(1));
-    expect(f.controller.snapshot.item?.current_price).toBe(2100000);
+    expect(f.controller.snapshot.items[0].current_price).toBe(2100000);
     expect(f.controller.connection).toBe("connected");
   });
 

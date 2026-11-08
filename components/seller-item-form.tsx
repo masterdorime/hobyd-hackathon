@@ -31,15 +31,36 @@ async function responseError(response: Response): Promise<unknown> {
 export function SellerItemForm({
   roomId,
   relistItemId,
+  items,
+  onStart,
 }: {
   roomId: string;
   relistItemId?: string | null;
+  items: Item[];
+  onStart(itemId: string): Promise<Item | null>;
 }) {
   const t = useTranslations();
   const router = useRouter();
   const [pending, setPending] = useState<"create" | "relist" | null>(null);
+  const [startingId, setStartingId] = useState<string | null>(null);
   const [notice, setNotice] = useState<Notice>(null);
   const [createdItem, setCreatedItem] = useState<Item | null>(null);
+
+  async function startListing(itemId: string) {
+    setStartingId(itemId);
+    setNotice(null);
+    try {
+      const started = await onStart(itemId);
+      if (!started) {
+        setNotice({ kind: "error", text: t("errors.generic") });
+        return;
+      }
+      setCreatedItem(started);
+      router.refresh();
+    } finally {
+      setStartingId(null);
+    }
+  }
 
   async function createItem(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -121,13 +142,37 @@ export function SellerItemForm({
           {pending === "create" ? t("item.createPending") : t("item.createAction")}
         </button>
       </form>
+      <div className="seller-listings">
+        <div className="section-line">
+          <h3 className="section-label">{t("item.listingQueue")}</h3>
+          <span className="utility-text">{items.length}</span>
+        </div>
+        {items.length === 0 ? <p className="muted">{t("item.noListings")}</p> : items.map((item) => (
+          <div className="listing-row" key={item.id}>
+            <div>
+              <strong>{item.title}</strong>
+              <span>{item.status.toUpperCase()} · {formatIdr(item.status === "listed" ? item.start_price : item.current_price)}</span>
+            </div>
+            {item.status === "listed" ? (
+              <button
+                className="btn btn-primary btn-small"
+                type="button"
+                onClick={() => startListing(item.id)}
+                disabled={startingId !== null || pending !== null}
+              >
+                {startingId === item.id ? t("item.startingBid") : t("item.startBid")}
+              </button>
+            ) : null}
+          </div>
+        ))}
+      </div>
       {notice ? <p className={notice.kind === "error" ? "form-error" : "form-success"} role={notice.kind === "error" ? "alert" : "status"}>{notice.text}</p> : null}
       {createdItem ? (
         <output className="seller-created well">
           <span className="section-label">{t("item.created")}</span>
           <strong>{createdItem.title}</strong>
           <span>{formatIdr(createdItem.current_price)}</span>
-          <span>{t("item.deadline")}: {createdItem.ends_at} (UTC)</span>
+          <span>{createdItem.ends_at ? `${t("item.deadline")}: ${createdItem.ends_at} (UTC)` : t("item.listingWaiting")}</span>
         </output>
       ) : null}
     </section>

@@ -12,7 +12,7 @@ import type { BidWithName, Item, PlaceBidResult } from "@/lib/types";
 type ItemPanelProps = {
   item: Item;
   bids: BidWithName[];
-  endsAt: string;
+  endsAt: string | null;
   onBid(amount: number): Promise<PlaceBidResult | null>;
   onElapsed(): Promise<unknown>;
   pending: boolean;
@@ -35,6 +35,7 @@ export function ItemPanel({
   const t = useTranslations("bid");
   const room = useTranslations("room");
   const leader = bids[0]?.profile_name ?? "—";
+  const active = ["live", "ending", "extended"].includes(item.status) && Boolean(endsAt);
 
   return (
     <div className="auction-stage">
@@ -55,8 +56,8 @@ export function ItemPanel({
           </div>
         </div>
         <div className="auction-controls">
-          <Countdown endsAt={endsAt} extensionsUsed={item.extensions_used} onElapsed={onElapsed} closePending={closePending} />
-          <BidForm key={`${item.id}:${item.current_price}`} currentPrice={item.current_price} onBid={onBid} pending={pending} disabled={item.status === "closed" || closePending} />
+          {endsAt ? <Countdown endsAt={endsAt} extensionsUsed={item.extensions_used} onElapsed={onElapsed} closePending={closePending} /> : null}
+          <BidForm key={`${item.id}:${item.current_price}`} currentPrice={item.current_price} onBid={onBid} pending={pending} disabled={!active || closePending} />
           <FormatAuctionFeedback feedback={feedback} />
           <CountUpAnnouncement bids={bids} />
         </div>

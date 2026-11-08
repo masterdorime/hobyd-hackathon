@@ -38,10 +38,10 @@ const item: Item = {
   img_url: "https://example.com/item.png",
   start_price: 2500000,
   current_price: 2500000,
-  ends_at: "2026-11-08T00:02:00.000Z",
+  ends_at: null,
   winner: null,
   extensions_used: 0,
-  status: "live",
+  status: "listed",
   created_at: "2026-11-08T00:00:00.000Z",
 };
 
@@ -140,18 +140,17 @@ describe("POST /api/items", () => {
     ]);
   });
 
-  it("returns the server-created item without rollback on success", async () => {
+  it("creates a listed item without starting its clock", async () => {
     const response = await POST(requestWith(validForm()));
 
     expect(response.status).toBe(201);
     expect(await response.json()).toEqual(item);
     expect(mocks.remove).not.toHaveBeenCalled();
-    expect(mocks.rpc).toHaveBeenCalledWith("create_live_item", {
+    expect(mocks.rpc).toHaveBeenCalledWith("create_listing", {
       p_room_id: ROOM_ID,
       p_title: "Charizard Base Set",
       p_img_url: "https://example.com/item.png",
       p_start_price: 2500000,
-      p_duration_secs: 120,
     });
   });
 });

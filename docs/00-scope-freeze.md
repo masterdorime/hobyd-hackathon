@@ -50,7 +50,9 @@ Fitur yang ada di prototype lama tapi **TIDAK** dipakai di build ini:
 
 Catatan amandemen: kategori room, thumbnail room, dan kemampuan semua user
 terautentikasi menjadi seller untuk room miliknya **kini in-scope** atas
-persetujuan eksplisit product owner. Larangan chat, auction mode, dan fitur lain
+persetujuan eksplisit product owner. Chat room, sign-up mandiri, password
+visibility, dan lifecycle listing-first + Start Bid juga **kini in-scope**
+(Amandemen 2). Larangan auction mode, private DM, moderation chat, dan fitur lain
 di atas tetap berlaku.
 
 Alasan: **laporan pengembangan harus selaras dengan proposal.** Menambah fitur =

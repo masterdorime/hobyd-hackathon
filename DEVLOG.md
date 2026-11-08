@@ -20,3 +20,4 @@ Format: `YYYY-MM-DD HH:MM | tahap | kejadian | keputusan/aksi`
 - 2026-11-08 | Tahap 7 | Suspense memulai stream 200 sebelum penolakan owner | Aktifkan `authInterrupts`, hapus boundary cache-mode lama agar 403 non-winner benar
 - 2026-11-08 | Tahap 8 | QRIS resume tidak boleh membuat charge baru | Simpan transaction/action QRIS di order, gunakan sisa waktu server, dan batasi transisi ke pending-only
 - 2026-11-08 | Amandemen | Semua user login boleh punya satu room live | Tambah owner_id unik, nama/kategori/thumbnail; `SELLER_ALLOWLIST` dipensiunkan sebagai gate
+- 2026-11-08 | Amandemen 2 | Listing-first, multi-lot, chat publik, dan sign-up mandiri | Start Bid menentukan deadline server; signup auto-confirm memakai admin; chat dibatasi 1 pesan/detik

@@ -28,11 +28,11 @@ create table items (
   img_url text not null,
   start_price int not null check (start_price > 0),
   current_price int not null check (current_price > 0),
-  ends_at timestamptz not null,
+  ends_at timestamptz,
   winner uuid references profiles(id),
   extensions_used int not null default 0 check (extensions_used >= 0),
-  status text not null default 'lobby'
-    check (status in ('lobby','live','ending','extended','closed')),
+  status text not null default 'listed'
+    check (status in ('listed','lobby','live','ending','extended','closed')),
   created_at timestamptz not null default now()
 );
 
@@ -54,6 +54,14 @@ create table orders (
   paid_at timestamptz
 );
 
+create table chat_messages (
+  id uuid primary key default gen_random_uuid(),
+  room_id uuid not null references rooms(id) on delete cascade,
+  user_id uuid not null references profiles(id) on delete cascade,
+  body text not null check (char_length(btrim(body)) between 1 and 280),
+  created_at timestamptz not null default now()
+);
+
 create index bids_item_time_idx on bids (item_id, created_at desc);
 create index items_room_status_idx on items (room_id, status);
 
@@ -63,17 +71,26 @@ alter table public.rooms add column if not exists category text;
 alter table public.rooms add column if not exists thumbnail_url text;
 create unique index if not exists rooms_owner_unique_idx on public.rooms (owner_id) where owner_id is not null;
 
+-- Existing installations: listing-first auctions and authenticated room chat.
+alter table public.items alter column ends_at drop not null;
+alter table public.items drop constraint if exists items_status_check;
+alter table public.items add constraint items_status_check
+  check (status in ('listed','lobby','live','ending','extended','closed'));
+create index if not exists chat_messages_room_time_idx on public.chat_messages (room_id, created_at desc);
+
 alter table rooms enable row level security;
 alter table items enable row level security;
 alter table bids enable row level security;
 alter table orders enable row level security;
 alter table profiles enable row level security;
+alter table chat_messages enable row level security;
 
 create policy "public read rooms" on rooms for select to anon, authenticated using (true);
 create policy "public read items" on items for select to anon, authenticated using (true);
 create policy "public read bids" on bids for select to anon, authenticated using (true);
 create policy "public read names" on profiles for select to anon, authenticated using (true);
 create policy "winner order read" on orders for select to authenticated using (auth.uid() = winner);
+create policy "authenticated room chat read" on chat_messages for select to authenticated using (true);
 -- SENGAJA tidak ada policy INSERT/UPDATE/DELETE untuk anon/authenticated.
 -- Semua penulisan lewat Route Handler dengan service_role setelah verifikasi JWT.
 
@@ -162,13 +179,20 @@ grant all on function close_item(uuid) to service_role;
 do $$ begin alter publication supabase_realtime add table bids;  exception when duplicate_object then null; end $$;
 do $$ begin alter publication supabase_realtime add table items; exception when duplicate_object then null; end $$;
 do $$ begin alter publication supabase_realtime add table rooms; exception when duplicate_object then null; end $$;
+do $$ begin alter publication supabase_realtime add table chat_messages; exception when duplicate_object then null; end $$;
 
 -- Auto-create profile saat signup (name = prefix email).
 create or replace function public.handle_new_user()
 returns trigger language plpgsql security definer set search_path = public as $$
 begin
   insert into public.profiles (id, name)
-  values (new.id, split_part(new.email, '@', 1))
+  values (
+    new.id,
+    coalesce(
+      nullif(btrim(new.raw_user_meta_data->>'name'), ''),
+      split_part(new.email, '@', 1)
+    )
+  )
   on conflict (id) do nothing;
   return new;
 end; $$;
@@ -222,3 +246,104 @@ grant execute on function public.create_live_item(uuid,text,text,int,int) to ser
 alter table public.orders add column if not exists midtrans_transaction_id text;
 alter table public.orders add column if not exists qris_action_url text;
 alter table public.orders add column if not exists qris_expires_at timestamptz;
+
+-- Listing-first auction: creation never starts the clock or accepts bids.
+create or replace function public.create_listing(
+  p_room_id uuid, p_title text, p_img_url text, p_start_price int
+) returns items
+language plpgsql security definer set search_path = public as $$
+declare
+  v_room rooms%rowtype;
+  v_item items%rowtype;
+begin
+  if p_room_id is null
+     or p_title is null or char_length(btrim(p_title)) not between 1 and 120
+     or p_img_url is null or btrim(p_img_url) = ''
+     or p_start_price is null or p_start_price <= 0 then
+    raise exception 'invalid_item';
+  end if;
+  select * into v_room from public.rooms where id = p_room_id for update;
+  if not found or v_room.status <> 'live' then
+    raise exception 'room_not_live';
+  end if;
+  insert into public.items (
+    room_id, title, img_url, start_price, current_price, ends_at, status
+  ) values (
+    p_room_id, btrim(p_title), p_img_url, p_start_price, p_start_price, null, 'listed'
+  ) returning * into v_item;
+  return v_item;
+end; $$;
+
+revoke all on function public.create_listing(uuid,text,text,int) from public, anon, authenticated;
+grant execute on function public.create_listing(uuid,text,text,int) to service_role;
+
+create or replace function public.start_item(
+  p_item_id uuid, p_duration_secs int
+) returns items
+language plpgsql security definer set search_path = public as $$
+declare
+  v_item items%rowtype;
+  v_room rooms%rowtype;
+begin
+  if p_item_id is null or p_duration_secs is null or p_duration_secs <= 0 then
+    raise exception 'invalid_item';
+  end if;
+  perform pg_advisory_xact_lock(hashtext(p_item_id::text));
+  select * into v_item from public.items where id = p_item_id for update;
+  if not found then raise exception 'item_not_found'; end if;
+  select * into v_room from public.rooms where id = v_item.room_id;
+  if not found or v_room.status <> 'live' then raise exception 'room_not_live'; end if;
+  if v_item.status <> 'listed' then raise exception 'item_not_listed'; end if;
+
+  update public.items
+  set status = 'live',
+      current_price = start_price,
+      ends_at = now() + make_interval(secs => p_duration_secs),
+      extensions_used = 0,
+      winner = null
+  where id = p_item_id
+  returning * into v_item;
+  return v_item;
+end; $$;
+
+revoke all on function public.start_item(uuid,int) from public, anon, authenticated;
+grant execute on function public.start_item(uuid,int) to service_role;
+
+create or replace function public.send_chat_message(
+  p_room_id uuid, p_user_id uuid, p_body text
+) returns chat_messages
+language plpgsql security definer set search_path = public as $$
+declare
+  v_room rooms%rowtype;
+  v_message chat_messages%rowtype;
+begin
+  if p_room_id is null or p_user_id is null
+     or p_body is null or char_length(btrim(p_body)) not between 1 and 280 then
+    raise exception 'invalid_message';
+  end if;
+  select * into v_room from public.rooms where id = p_room_id;
+  if not found or v_room.status <> 'live' then raise exception 'room_not_live'; end if;
+  if exists (
+    select 1 from public.chat_messages
+    where room_id = p_room_id and user_id = p_user_id
+      and created_at > now() - interval '1 second'
+  ) then raise exception 'chat_rate_limited'; end if;
+
+  insert into public.chat_messages (room_id, user_id, body)
+  values (p_room_id, p_user_id, btrim(p_body))
+  returning * into v_message;
+  return v_message;
+end; $$;
+
+revoke all on function public.send_chat_message(uuid,uuid,text) from public, anon, authenticated;
+grant execute on function public.send_chat_message(uuid,uuid,text) to service_role;
+
+grant select on public.chat_messages to authenticated;
+grant select, insert, update, delete on public.chat_messages to service_role;
+
+-- Data API access: clients are SELECT-only; all writes stay in server routes.
+grant usage on schema public to anon, authenticated;
+grant select on public.rooms, public.items, public.bids, public.orders, public.profiles to anon, authenticated;
+grant select on public.chat_messages to authenticated;
+grant select, insert, update, delete on public.rooms, public.items, public.bids, public.orders, public.profiles, public.chat_messages to service_role;
+revoke insert, update, delete on public.rooms, public.items, public.bids, public.orders, public.profiles, public.chat_messages from anon, authenticated;

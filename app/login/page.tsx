@@ -28,6 +28,9 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         <h1 id="login-title">{messages.title}</h1>
         <p>{messages.description}</p>
         <LoginForm destination={destination} messages={messages} />
+        <p className="auth-switch">
+          {messages.noAccount} <a href={`/signup?next=${encodeURIComponent(destination)}`}>{messages.signUpLink}</a>
+        </p>
         <Link className="login-back" href={destination}>{messages.back}</Link>
       </section>
     </main>

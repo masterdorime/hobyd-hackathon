@@ -5,7 +5,6 @@ import { setRequestLocale } from "next-intl/server";
 import { EndLiveButton } from "@/components/end-live-button";
 import { LiveAuction } from "@/components/live-auction";
 import { categoryLabel } from "@/components/room-card";
-import { SellerItemForm } from "@/components/seller-item-form";
 import { getAuctionSnapshot } from "@/lib/server/auction";
 import { getRelistSourceForSeller } from "@/lib/server/items";
 import { getRoom } from "@/lib/server/rooms";
@@ -31,10 +30,11 @@ export default async function RoomPage({ params }: RoomPageProps) {
   const canSell = Boolean(auth.data.user && room.owner_id === auth.data.user.id);
   const authenticated = Boolean(auth.data.user);
   let relistItemId: string | null = null;
-  if (canSell && snapshot.item?.status === "closed") {
+  const latestClosed = snapshot.items.find((item) => item.status === "closed");
+  if (canSell && latestClosed) {
     try {
-      await getRelistSourceForSeller(snapshot.item.id);
-      relistItemId = snapshot.item.id;
+      await getRelistSourceForSeller(latestClosed.id);
+      relistItemId = latestClosed.id;
     } catch (error) {
       if (!(error instanceof Error && error.message === "RELIST_NOT_ALLOWED")) {
         throw error;
@@ -45,19 +45,19 @@ export default async function RoomPage({ params }: RoomPageProps) {
   return (
     <RoomContent
       room={room}
-      initialItem={snapshot.item}
+      initialItems={snapshot.items}
       initialBids={snapshot.bids}
       canSell={canSell}
       authenticated={authenticated}
       relistItemId={relistItemId}
-      hasActiveItem={Boolean(snapshot.item && snapshot.item.status !== "closed")}
+      hasActiveItem={snapshot.items.some((item) => ["live", "ending", "extended"].includes(item.status))}
     />
   );
 }
 
 function RoomContent({
   room,
-  initialItem,
+  initialItems,
   initialBids,
   canSell,
   authenticated,
@@ -65,7 +65,7 @@ function RoomContent({
   hasActiveItem,
 }: {
   room: Room;
-  initialItem: Item | null;
+  initialItems: Item[];
   initialBids: BidWithName[];
   canSell: boolean;
   authenticated: boolean;
@@ -89,8 +89,7 @@ function RoomContent({
           {canSell && room.status === "live" ? <EndLiveButton roomId={room.id} blocked={hasActiveItem} /> : null}
         </div>
       </section>
-      <LiveAuction room={room} initialItem={initialItem} initialBids={initialBids} canSell={canSell} authenticated={authenticated} />
-      {canSell && room.status === "live" ? <SellerItemForm roomId={room.id} relistItemId={relistItemId} /> : null}
+      <LiveAuction room={room} initialItems={initialItems} initialBids={initialBids} canSell={canSell} authenticated={authenticated} relistItemId={relistItemId} />
     </main>
   );
 }

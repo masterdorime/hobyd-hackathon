@@ -46,7 +46,7 @@ beforeEach(() => {
       }),
     }),
   }));
-  mocks.rpc.mockResolvedValue({ data: { ...item, id: "new-item-id", status: "live" }, error: null });
+  mocks.rpc.mockResolvedValue({ data: { ...item, id: "new-item-id", status: "listed", ends_at: null }, error: null });
   mocks.createAdminClient.mockReturnValue({ from: mocks.from, rpc: mocks.rpc });
 });
 
@@ -60,16 +60,15 @@ describe("seller relist", () => {
     });
   });
 
-  it("creates a new live item with the original start price and server duration", async () => {
+  it("creates a new listed item with the original start price", async () => {
     const result = await relistExpiredItem(item.id);
 
     expect(result.id).toBe("new-item-id");
-    expect(mocks.rpc).toHaveBeenCalledWith("create_live_item", {
+    expect(mocks.rpc).toHaveBeenCalledWith("create_listing", {
       p_room_id: item.room_id,
       p_title: item.title,
       p_img_url: item.img_url,
       p_start_price: item.start_price,
-      p_duration_secs: 120,
     });
   });
 

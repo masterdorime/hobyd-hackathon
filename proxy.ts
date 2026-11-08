@@ -9,7 +9,7 @@ const CACHE_HEADERS = ["cache-control", "expires", "pragma"] as const;
 
 function pageResponse(request: NextRequest): NextResponse {
   const { pathname } = request.nextUrl;
-  if (pathname.startsWith("/api") || pathname === "/login") {
+  if (pathname.startsWith("/api") || pathname === "/login" || pathname === "/signup") {
     return NextResponse.next({ request });
   }
   return intlMiddleware(request);

@@ -46,13 +46,11 @@ export async function createItemForSeller(
   }
 
   const publicUrl = storage.getPublicUrl(path).data.publicUrl;
-  const duration = getAuctionConfig().auctionDurationSec;
-  const { data, error } = await admin.rpc("create_live_item", {
+  const { data, error } = await admin.rpc("create_listing", {
     p_room_id: input.roomId,
     p_title: input.title,
     p_img_url: publicUrl,
     p_start_price: input.startPrice,
-    p_duration_secs: duration,
   });
 
   if (error || !data) {
@@ -115,15 +113,44 @@ export async function getRelistSourceForSeller(itemId: string): Promise<RelistSo
 export async function relistExpiredItem(itemId: string): Promise<Item> {
   const source = await getRelistSourceForSeller(itemId);
   const admin = createAdminClient();
-  const { data, error } = await admin.rpc("create_live_item", {
+  const { data, error } = await admin.rpc("create_listing", {
     p_room_id: source.room_id,
     p_title: source.title,
     p_img_url: source.img_url,
     p_start_price: source.start_price,
-    p_duration_secs: getAuctionConfig().auctionDurationSec,
   });
   if (error || !data) {
     throw new Error("RELIST_CREATE_FAILED");
+  }
+  return data as Item;
+}
+
+export async function startItemForOwner(itemId: string, userId: string): Promise<Item> {
+  const admin = createAdminClient();
+  const { data: item, error } = await admin
+    .from("items")
+    .select("id,room_id,status")
+    .eq("id", itemId)
+    .maybeSingle();
+  if (error || !item) throw new Error("ITEM_NOT_FOUND");
+  const { data: room, error: roomError } = await admin
+    .from("rooms")
+    .select("owner_id,status")
+    .eq("id", item.room_id)
+    .maybeSingle();
+  if (roomError || !room || room.owner_id !== userId) {
+    throw new AuthorizationError("FORBIDDEN");
+  }
+  if (room.status !== "live") throw new RoomNotLiveError();
+  if (item.status !== "listed") throw new Error("ITEM_NOT_LISTED");
+
+  const { data, error: startError } = await admin.rpc("start_item", {
+    p_item_id: itemId,
+    p_duration_secs: getAuctionConfig().auctionDurationSec,
+  });
+  if (startError || !data) {
+    if (startError?.message === "item_not_listed") throw new Error("ITEM_NOT_LISTED");
+    throw new Error("ITEM_START_FAILED");
   }
   return data as Item;
 }
