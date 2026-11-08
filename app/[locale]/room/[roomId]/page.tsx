@@ -5,6 +5,7 @@ import { setRequestLocale } from "next-intl/server";
 import { LiveAuction } from "@/components/live-auction";
 import { SellerItemForm } from "@/components/seller-item-form";
 import { getAuctionSnapshot } from "@/lib/server/auction";
+import { getRelistSourceForSeller } from "@/lib/server/items";
 import { isSellerEmail } from "@/lib/server/auth";
 import { getRoom } from "@/lib/server/rooms";
 import { createServerSupabase } from "@/lib/supabase/server";
@@ -26,12 +27,26 @@ export default async function RoomPage({ params }: RoomPageProps) {
     notFound();
   }
 
+  const canSell = isSellerEmail(auth.data.user?.email);
+  let relistItemId: string | null = null;
+  if (canSell && snapshot.item?.status === "closed") {
+    try {
+      await getRelistSourceForSeller(snapshot.item.id);
+      relistItemId = snapshot.item.id;
+    } catch (error) {
+      if (!(error instanceof Error && error.message === "RELIST_NOT_ALLOWED")) {
+        throw error;
+      }
+    }
+  }
+
   return (
     <RoomContent
       room={room}
       initialItem={snapshot.item}
       initialBids={snapshot.bids}
-      canSell={isSellerEmail(auth.data.user?.email)}
+      canSell={canSell}
+      relistItemId={relistItemId}
     />
   );
 }
@@ -41,11 +56,13 @@ function RoomContent({
   initialItem,
   initialBids,
   canSell,
+  relistItemId,
 }: {
   room: Room;
   initialItem: Item | null;
   initialBids: BidWithName[];
   canSell: boolean;
+  relistItemId: string | null;
 }) {
   const roomText = useTranslations("room");
   const common = useTranslations("common");
@@ -61,7 +78,7 @@ function RoomContent({
         <span className="status-live"><span className="status-dot" />{room.status === "live" ? common("live") : room.status.toUpperCase()}</span>
       </section>
       <LiveAuction room={room} initialItem={initialItem} initialBids={initialBids} canSell={canSell} />
-      {canSell ? <SellerItemForm roomId={room.id} roomStatus={room.status} /> : null}
+      {canSell ? <SellerItemForm roomId={room.id} roomStatus={room.status} relistItemId={relistItemId} /> : null}
     </main>
   );
 }

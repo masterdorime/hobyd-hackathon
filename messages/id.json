@@ -69,6 +69,7 @@
     "goLiveSuccess": "Room sekarang live. Item siap dibuat.",
     "liveRequired": "Aktifkan room dengan Go Live sebelum membuat item.",
     "created": "Item berhasil dibuat",
+    "relist": "Relist item ini",
     "deadline": "Batas akhir server",
     "formPreview": "Form hanya pratinjau dan belum mengirim data."
   },
@@ -126,7 +127,13 @@
     "mockConfirm": "Konfirmasi pembayaran sandbox",
     "confirmPending": "Mengonfirmasi…",
     "preview": "QR dan status pada halaman ini masih berupa fixture.",
-    "relist": "Relist sebagai item baru"
+    "relist": "Relist sebagai item baru",
+    "qrPending": "Membuat atau memperbarui QRIS…",
+    "qrLoadFailed": "QRIS belum tersedia. Coba lagi tanpa membuat order baru.",
+    "retry": "Coba lagi",
+    "mockHelp": "Gunakan hanya sebagai fallback sandbox ketika webhook lokal tidak dapat menerima notifikasi.",
+    "paidHelp": "Status konfirmasi dan waktu pembayaran diverifikasi oleh server.",
+    "actionFailed": "Pembayaran belum terkonfirmasi. Periksa status dan coba lagi."
   },
   "errors": {
     "invalid": "Data tidak valid. Periksa kembali isianmu.",

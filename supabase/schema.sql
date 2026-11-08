@@ -204,3 +204,8 @@ end; $$;
 
 revoke all on function public.create_live_item(uuid,text,text,int,int) from public, anon, authenticated;
 grant execute on function public.create_live_item(uuid,text,text,int,int) to service_role;
+
+-- Supplemental Midtrans QRIS resume metadata (nullable for existing orders).
+alter table public.orders add column if not exists midtrans_transaction_id text;
+alter table public.orders add column if not exists qris_action_url text;
+alter table public.orders add column if not exists qris_expires_at timestamptz;

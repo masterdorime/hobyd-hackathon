@@ -1,6 +1,7 @@
 import type { User } from "@supabase/supabase-js";
 
 import { getAuctionConfig } from "./config";
+import { requireSeller } from "./auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createServerSupabase } from "@/lib/supabase/server";
 import type { Item, ItemStatus } from "@/lib/types";
@@ -66,4 +67,55 @@ export async function createItemForSeller(
     ...data,
     status: data.status as ItemStatus,
   } as Item;
+}
+
+export interface RelistSource {
+  room_id: string;
+  title: string;
+  img_url: string;
+  start_price: number;
+}
+
+export async function getRelistSourceForSeller(itemId: string): Promise<RelistSource> {
+  await requireSeller();
+  const admin = createAdminClient();
+  const { data: order, error: orderError } = await admin
+    .from("orders")
+    .select("status")
+    .eq("item_id", itemId)
+    .maybeSingle();
+  if (orderError || !order || order.status !== "expired") {
+    throw new Error("RELIST_NOT_ALLOWED");
+  }
+
+  const { data: item, error: itemError } = await admin
+    .from("items")
+    .select("room_id,title,img_url,start_price")
+    .eq("id", itemId)
+    .maybeSingle();
+  if (itemError || !item) {
+    throw new Error("RELIST_NOT_ALLOWED");
+  }
+  return {
+    room_id: item.room_id,
+    title: item.title,
+    img_url: item.img_url,
+    start_price: item.start_price,
+  };
+}
+
+export async function relistExpiredItem(itemId: string): Promise<Item> {
+  const source = await getRelistSourceForSeller(itemId);
+  const admin = createAdminClient();
+  const { data, error } = await admin.rpc("create_live_item", {
+    p_room_id: source.room_id,
+    p_title: source.title,
+    p_img_url: source.img_url,
+    p_start_price: source.start_price,
+    p_duration_secs: getAuctionConfig().auctionDurationSec,
+  });
+  if (error || !data) {
+    throw new Error("RELIST_CREATE_FAILED");
+  }
+  return data as Item;
 }

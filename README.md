@@ -40,6 +40,21 @@ npm install
 npm run dev                  # http://localhost:3000/id
 ```
 
+## Deployment & verifikasi
+
+- Supabase SQL Editor: jalankan `supabase/schema.sql`, lalu `supabase/seed.sql`.
+- Storage: bucket public-read bernama `item-images` diperlukan.
+- Midtrans sandbox notification URL:
+  `https://hobyd-hackathon.vercel.app/api/orders/webhook`
+- Test akun demo disimpan lokal dalam file yang git-ignored, bukan di repo atau README.
+
+```bash
+npm run typecheck
+npm run lint
+npx vitest run
+npx next build
+```
+
 ## Dokumentasi
 
 - `docs/00-scope-freeze.md` — batas fitur

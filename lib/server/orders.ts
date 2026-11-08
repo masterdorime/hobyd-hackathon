@@ -14,19 +14,19 @@ export type WinnerOrderOrEmpty = {
 async function readBy(
   column: "id" | "item_id",
   value: string,
-  userId: string,
+  userId: string | null,
 ): Promise<WinnerOrderOrEmpty | null> {
   const admin = createAdminClient();
   const { data: order, error: orderError } = await admin
     .from("orders")
-    .select("id,item_id,winner,status,created_at,paid_at")
+    .select("id,item_id,winner,status,created_at,paid_at,midtrans_transaction_id,qris_action_url,qris_expires_at")
     .eq(column, value)
     .maybeSingle();
   if (orderError) {
     throw new Error("ORDER_READ_FAILED");
   }
 
-  if (order && order.winner !== userId) {
+  if (order && userId !== null && order.winner !== userId) {
     throw new AuthorizationError("FORBIDDEN");
   }
 
@@ -61,4 +61,10 @@ export function getOrderForWinner(
   userId: string,
 ): Promise<WinnerOrderOrEmpty | null> {
   return readBy("id", orderId, userId);
+}
+
+export function getOrderForPayment(
+  orderId: string,
+): Promise<WinnerOrderOrEmpty | null> {
+  return readBy("id", orderId, null);
 }

@@ -69,6 +69,7 @@
     "goLiveSuccess": "The room is live. You can create an item now.",
     "liveRequired": "Use Go Live before creating an item.",
     "created": "Item created successfully",
+    "relist": "Relist this item",
     "deadline": "Server deadline",
     "formPreview": "This form is a visual preview and does not submit data."
   },
@@ -126,7 +127,13 @@
     "mockConfirm": "Confirm sandbox payment",
     "confirmPending": "Confirming…",
     "preview": "The QR and status on this page still use fixtures.",
-    "relist": "Relist as a new item"
+    "relist": "Relist as a new item",
+    "qrPending": "Creating or refreshing QRIS…",
+    "qrLoadFailed": "QRIS is not available yet. Try again without creating a new order.",
+    "retry": "Try again",
+    "mockHelp": "Use only as a sandbox fallback when the webhook cannot receive notifications locally.",
+    "paidHelp": "The server verifies the confirmation status and payment time.",
+    "actionFailed": "Payment is not confirmed yet. Check the status and try again."
   },
   "errors": {
     "invalid": "Invalid data. Check your input.",

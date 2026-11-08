@@ -63,4 +63,7 @@ export interface Order {
   status: OrderStatus;
   created_at: string;
   paid_at: string | null;
+  midtrans_transaction_id?: string | null;
+  qris_action_url?: string | null;
+  qris_expires_at?: string | null;
 }

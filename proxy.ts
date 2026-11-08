@@ -15,6 +15,15 @@ function pageResponse(request: NextRequest): NextResponse {
   return intlMiddleware(request);
 }
 
+function isInvalidSessionError(error: unknown): boolean {
+  if (!error || typeof error !== "object") {
+    return false;
+  }
+  const code = "code" in error && typeof error.code === "string" ? error.code : "";
+  const message = "message" in error && typeof error.message === "string" ? error.message.toLowerCase() : "";
+  return ["refresh_token_not_found", "refresh_token_already_used", "session_expired", "invalid_jwt"].includes(code) || message.includes("invalid refresh token") || message.includes("refresh token already used");
+}
+
 export default async function proxy(request: NextRequest) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
@@ -43,9 +52,18 @@ export default async function proxy(request: NextRequest) {
     },
   });
 
-  await supabase.auth.getClaims();
-  const response = pageResponse(request);
-  for (const cookie of supabaseResponse.cookies.getAll()) {
+  try {
+    await supabase.auth.getClaims();
+  } catch (error) {
+    if (isInvalidSessionError(error)) {
+      try {
+        await supabase.auth.signOut({ scope: "local" });
+      } catch {
+        // Clearing a stale session is best-effort; public reads must still work.
+      }
+    }
+  }
+  const response = pageResponse(request);  for (const cookie of supabaseResponse.cookies.getAll()) {
     response.cookies.set(cookie);
   }
   for (const header of CACHE_HEADERS) {

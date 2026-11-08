@@ -28,10 +28,18 @@ async function responseError(response: Response): Promise<unknown> {
   return body?.error;
 }
 
-export function SellerItemForm({ roomId, roomStatus }: { roomId: string; roomStatus: RoomStatus }) {
+export function SellerItemForm({
+  roomId,
+  roomStatus,
+  relistItemId,
+}: {
+  roomId: string;
+  roomStatus: RoomStatus;
+  relistItemId?: string | null;
+}) {
   const t = useTranslations();
   const router = useRouter();
-  const [pending, setPending] = useState<"live" | "create" | null>(null);
+  const [pending, setPending] = useState<"live" | "create" | "relist" | null>(null);
   const [notice, setNotice] = useState<Notice>(null);
   const [createdItem, setCreatedItem] = useState<Item | null>(null);
   const isLive = roomStatus === "live";
@@ -78,6 +86,30 @@ export function SellerItemForm({ roomId, roomStatus }: { roomId: string; roomSta
     }
   }
 
+  async function relist() {
+    if (!relistItemId) return;
+    setPending("relist");
+    setNotice(null);
+    try {
+      const response = await fetch("/api/items/relist", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ itemId: relistItemId }),
+      });
+      if (!response.ok) {
+        setNotice({ kind: "error", text: t(`errors.${errorKey(await responseError(response))}`) });
+        return;
+      }
+      setCreatedItem(await response.json() as Item);
+      setNotice({ kind: "success", text: t("item.created") });
+      router.refresh();
+    } catch {
+      setNotice({ kind: "error", text: t("errors.upstream") });
+    } finally {
+      setPending(null);
+    }
+  }
+
   return (
     <section className="seller-panel raised" aria-labelledby="seller-form-title">
       <div className="seller-panel-heading">
@@ -85,8 +117,8 @@ export function SellerItemForm({ roomId, roomStatus }: { roomId: string; roomSta
           <span className="section-label">SELLER CONTROL</span>
           <h2 id="seller-form-title">{t("item.createTitle")}</h2>
         </div>
-        <button className="btn btn-primary btn-small" type="button" onClick={goLive} disabled={pending !== null || isLive}>
-          {pending === "live" ? t("item.goLivePending") : isLive ? t("common.live") : t("item.goLive")}
+        <button className="btn btn-primary btn-small" type="button" onClick={relistItemId ? relist : goLive} disabled={pending !== null || (isLive && !relistItemId)}>
+          {pending === "live" ? t("item.goLivePending") : pending === "relist" ? t("item.createPending") : relistItemId ? t("item.relist") : isLive ? t("common.live") : t("item.goLive")}
         </button>
       </div>
       <form className="seller-form" onSubmit={createItem}>
