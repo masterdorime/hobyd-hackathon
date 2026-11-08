@@ -9,6 +9,8 @@ Telkom University.
 
 ## Status
 
+Repositori: `https://github.com/masterdorime/hobyd-hackathon`
+
 🚧 **Dalam pengerjaan (build 12 jam).** Lengkapi bagian di bawah setelah web jalan:
 
 - [ ] Live URL Vercel: `https://<app>.vercel.app`

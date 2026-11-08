@@ -12,9 +12,12 @@ dist/
 
 # tooling / OS
 *.tsbuildinfo
+next-env.d.ts
 .DS_Store
 Thumbs.db
 .vercel
+.superpowers/
+.playwright-mcp/
 .idea/
 .vscode/
 *.log
