@@ -23,6 +23,8 @@
     "password": "Password",
     "emailPlaceholder": "you@example.com",
     "passwordPlaceholder": "Account password",
+    "showPassword": "Show",
+    "hidePassword": "Hide",
     "submit": "Log in to HOBYD",
     "pending": "Checking…",
     "loginFailed": "Incorrect email or password.",

@@ -10,6 +10,8 @@ export interface LoginMessages {
   password: string;
   emailPlaceholder: string;
   passwordPlaceholder: string;
+  showPassword: string;
+  hidePassword: string;
   submit: string;
   pending: string;
   loginFailed: string;
@@ -26,6 +28,7 @@ export function LoginForm({
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordVisible, setPasswordVisible] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
@@ -68,16 +71,32 @@ export function LoginForm({
         placeholder={messages.emailPlaceholder}
       />
       <label htmlFor="login-password">{messages.password}</label>
-      <input
-        id="login-password"
-        type="password"
-        autoComplete="current-password"
-        required
-        minLength={6}
-        value={password}
-        onChange={(event) => setPassword(event.target.value)}
-        placeholder={messages.passwordPlaceholder}
-      />
+      <div className="login-password-field">
+        <input
+          id="login-password"
+          type={passwordVisible ? "text" : "password"}
+          autoComplete="current-password"
+          required
+          minLength={6}
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
+          placeholder={messages.passwordPlaceholder}
+        />
+        <button
+          className="login-password-toggle"
+          type="button"
+          aria-controls="login-password"
+          aria-label={passwordVisible ? messages.hidePassword : messages.showPassword}
+          title={passwordVisible ? messages.hidePassword : messages.showPassword}
+          onClick={() => setPasswordVisible((visible) => !visible)}
+        >
+          <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24">
+            <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z" />
+            <circle cx="12" cy="12" r="3" />
+            {passwordVisible ? <path d="m4 4 16 16" /> : null}
+          </svg>
+        </button>
+      </div>
       {error ? <p className="login-error" role="alert">{error}</p> : null}
       <button className="btn btn-primary login-submit" type="submit" disabled={pending}>
         {pending ? messages.pending : messages.submit}

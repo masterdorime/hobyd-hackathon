@@ -23,6 +23,8 @@
     "password": "Password",
     "emailPlaceholder": "kamu@example.com",
     "passwordPlaceholder": "Password akun",
+    "showPassword": "Lihat",
+    "hidePassword": "Sembunyikan",
     "submit": "Masuk ke HOBYD",
     "pending": "Memeriksa…",
     "loginFailed": "Email atau password tidak sesuai.",
