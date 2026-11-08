@@ -1,11 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useLocale } from "next-intl";
 
 import {
   AuctionApiError,
   closeItemRequest,
   fetchAuctionSnapshot,
+  getCurrentUserId,
   postBid,
 } from "@/lib/client/auction-api";
 import {
@@ -39,6 +42,8 @@ export function useAuction({
   const [closePending, setClosePending] = useState(false);
   const [feedback, setFeedback] = useState<AuctionFeedback>(null);
   const controllerRef = useRef<AuctionRealtimeController | null>(null);
+  const router = useRouter();
+  const locale = useLocale();
 
   useEffect(() => {
     const controller = createAuctionRealtime({
@@ -65,10 +70,10 @@ export function useAuction({
       } else {
         setSnapshot(latest);
       }
-      return true;
+      return latest;
     } catch {
       setConnection("disconnected");
-      return false;
+      return null;
     }
   }, [roomId]);
 
@@ -103,7 +108,18 @@ export function useAuction({
     setClosePending(true);
     try {
       const result = await closeItemRequest(item.id);
-      await refetchAndSync();
+      const latest = await refetchAndSync();
+      const authoritativeWinner = result.closed
+        ? result.winner
+        : latest?.item?.status === "closed"
+          ? latest.item.winner
+          : null;
+      if (authoritativeWinner) {
+        const currentUserId = await getCurrentUserId();
+        if (currentUserId === authoritativeWinner) {
+          router.push(`/${locale}/win/${item.id}`);
+        }
+      }
       return result;
     } catch (error) {
       setFeedback({
@@ -114,7 +130,7 @@ export function useAuction({
     } finally {
       setClosePending(false);
     }
-  }, [closePending, refetchAndSync, snapshot.item]);
+  }, [closePending, locale, refetchAndSync, router, snapshot.item]);
 
   return {
     item: snapshot.item,

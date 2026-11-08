@@ -108,7 +108,8 @@
     "description": "Bid tertinggi telah dikunci sebagai pemenang.",
     "priceLabel": "Bid kemenangan",
     "payAction": "Lanjut ke pembayaran",
-    "preview": "Halaman hasil ini masih menggunakan fixture."
+    "preview": "Halaman hasil ini masih menggunakan fixture.",
+    "noWinner": "Lelang selesai tanpa bid. Tidak ada pemenang atau order pembayaran."
   },
   "pay": {
     "eyebrow": "SANDBOX CHECKOUT",

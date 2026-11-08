@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/client";
 import type { AuctionSnapshot } from "./auction-realtime";
-import type { Bid, PlaceBidResult } from "@/lib/types";
+import type { Bid, CloseItemResult, PlaceBidResult } from "@/lib/types";
 
 export class AuctionApiError extends Error {
   constructor(public readonly code: string) {
@@ -26,7 +26,7 @@ export async function postBid(itemId: string, amount: number): Promise<PlaceBidR
   return response.json() as Promise<PlaceBidResult>;
 }
 
-export async function closeItemRequest(itemId: string): Promise<unknown> {
+export async function closeItemRequest(itemId: string): Promise<CloseItemResult> {
   const response = await fetch(`/api/items/${itemId}/close`, { method: "POST" });
   if (!response.ok) {
     throw await errorFrom(response);
@@ -40,7 +40,6 @@ export async function fetchAuctionSnapshot(roomId: string): Promise<AuctionSnaps
     .from("items")
     .select("*")
     .eq("room_id", roomId)
-    .neq("status", "closed")
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();
@@ -71,6 +70,14 @@ export async function fetchAuctionSnapshot(roomId: string): Promise<AuctionSnaps
       };
     }),
   };
+}
+
+export async function getCurrentUserId(): Promise<string> {
+  const { data, error } = await createClient().auth.getUser();
+  if (error || !data.user) {
+    throw new AuctionApiError("UNAUTHORIZED");
+  }
+  return data.user.id;
 }
 
 export type { Bid };

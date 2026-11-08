@@ -37,3 +37,29 @@ begin
 end $$;
 
 rollback;
+
+begin;
+
+-- In one transaction, v_now == ends_at; close_item must remain a no-op at equality.
+do $$
+declare
+  v_room uuid := gen_random_uuid();
+  v_item uuid := gen_random_uuid();
+  v_result jsonb;
+begin
+  insert into public.rooms (id, title, seller_name, status)
+  values (v_room, 'SQL CLOSE BOUNDARY', 'fixture', 'live');
+  insert into public.items (
+    id, room_id, title, img_url, start_price, current_price, ends_at, status
+  ) values (
+    v_item, v_room, 'Exact close boundary', 'https://example.com/card.png',
+    1000000, 1000000, now(), 'live'
+  );
+
+  select public.close_item(v_item) into v_result;
+  if (v_result->>'ok') <> 'true' or (v_result->>'noop') <> 'true' then
+    raise exception 'equal deadline close must be a no-op: %', v_result;
+  end if;
+end $$;
+
+rollback;

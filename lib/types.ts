@@ -48,6 +48,14 @@ export interface PlaceBidResult {
   extended: boolean;
 }
 
+export type CloseItemResult = {
+  ok: boolean;
+  noop?: boolean;
+  closed?: boolean;
+  winner: string | null;
+  error?: string;
+};
+
 export interface Order {
   id: string;
   item_id: string;

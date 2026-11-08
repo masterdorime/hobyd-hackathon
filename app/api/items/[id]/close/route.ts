@@ -11,7 +11,11 @@ export async function POST(
   try {
     await requireUser();
     const { id } = await params;
-    return NextResponse.json(await closeItem(id));
+    const result = await closeItem(id);
+    if (result?.error === "not_found") {
+      return apiError("NOT_FOUND");
+    }
+    return NextResponse.json(result);
   } catch (error) {
     const authResponse = authErrorResponse(error);
     if (authResponse) {

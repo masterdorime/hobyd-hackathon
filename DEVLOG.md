@@ -17,3 +17,4 @@ Format: `YYYY-MM-DD HH:MM | tahap | kejadian | keputusan/aksi`
 - 2026-11-08 | Tahap 4 | Waktu mulai item tidak bisa dipercaya dari browser | RPC `create_live_item` menghitung `ends_at=now()+duration` di Postgres
 - 2026-11-08 | Tahap 4 | `cacheComponents` Supabase SSR memicu background `Date.now` saat prerender | Gunakan App Router standar; matikan `cacheComponents`+`partialPrefetching`, jadikan route live/auth dinamis
 - 2026-11-08 | Tahap 6 | Optimasi adaptive media mengganggu first-frame subscriber | Gunakan default `Room` LiveKit; auction tetap independen dari status media
+- 2026-11-08 | Tahap 7 | Suspense memulai stream 200 sebelum penolakan owner | Aktifkan `authInterrupts`, hapus boundary cache-mode lama agar 403 non-winner benar

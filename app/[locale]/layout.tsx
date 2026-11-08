@@ -3,7 +3,7 @@ import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
-import { Suspense, type ReactNode } from "react";
+import type { ReactNode } from "react";
 
 import { SiteHeader } from "@/components/site-header";
 import { routing } from "@/i18n/routing";
@@ -39,10 +39,8 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
   return (
     <NextIntlClientProvider messages={messages}>
       <div className="app-world" lang={locale}>
-        <Suspense fallback={<div className="route-loading" role="status">LOADING HOBYD…</div>}>
-          <SiteHeader />
-          {children}
-        </Suspense>
+        <SiteHeader />
+        {children}
       </div>
     </NextIntlClientProvider>
   );

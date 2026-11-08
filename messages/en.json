@@ -108,7 +108,8 @@
     "description": "The highest bid has been locked as the winner.",
     "priceLabel": "Winning bid",
     "payAction": "Continue to payment",
-    "preview": "This result page still uses visual fixtures."
+    "preview": "This result page still uses visual fixtures.",
+    "noWinner": "The auction closed with no bids. There is no winner or payment order."
   },
   "pay": {
     "eyebrow": "SANDBOX CHECKOUT",

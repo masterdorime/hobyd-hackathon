@@ -10,7 +10,6 @@ export async function getAuctionSnapshot(roomId: string) {
     .from("items")
     .select("*")
     .eq("room_id", roomId)
-    .neq("status", "closed")
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();
